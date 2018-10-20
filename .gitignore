@@ -107,3 +107,12 @@ typings/
 
 # Build
 build/
+
+# Config files
+config.json
+config.js
+
+# image files
+*.jpg
+*.png
+images/

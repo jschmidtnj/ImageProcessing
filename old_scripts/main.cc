@@ -2,7 +2,6 @@
 
 Napi::String SayHi(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  Mat theimage = imread("image.jpg");
 
   return Napi::String::New(env, "Hello");
 }
