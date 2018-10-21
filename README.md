@@ -8,3 +8,4 @@ Then check [this](https://stackoverflow.com/questions/15320267/package-opencv-wa
 
 how to use JIMP: https://libraries.io/github/mubassirhayat/jimp
 
+https://towardsdatascience.com/face-detection-for-beginners-e58e8f21aad9  

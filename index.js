@@ -1,9 +1,26 @@
 const config = require('./config/config');
+const admin = require('firebase-admin');
+admin.initializeApp({
+    credential: admin.credential.cert(config.firebaseadmin),
+    databaseURL: config.other.databaseurl,
+    storageBucket: config.other.storagebucket
+});
+var fs = require('fs');
+var path = require('path');
+var os = require("os");
+var bucket = admin.storage().bucket();
+
+const promisePool = require('es6-promise-pool');
+const PromisePool = promisePool.PromisePool;
+const secureCompare = require('secure-compare');
+
+var secretKey = config.other.secretKey;
 var Jimp = require('jimp')
-var url = "https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&h=350";
+
+var url = "https://firebasestorage.googleapis.com/v0/b/image-face-detection.appspot.com/o/images%2F4_Dancing_Dancing_4_33.jpg?alt=media&token=bf771f69-07f0-4e99-93df-a1243609c13e";
 
 function createGrayscale(url, outputname) {
-  Jimp.read(url, function (err, image) {
+  Jimp.read(url, (err, image) => {
     console.log("getting image");
     //console.log(image.bitmap.data)
     var xdim = image.bitmap.width;
@@ -29,6 +46,38 @@ function createGrayscale(url, outputname) {
     }
     image.write(outputname);
     console.log("finished.");
+      //console.log(res);
+      var file = bucket.file("images/image1.jpg");
+      var buffer = new Buffer(res, 'base64')
+      var fileName = "temp.jpg";
+      const tempFilePath = path.join(os.tmpdir(), fileName);
+      fs.writeFile(tempFilePath, buffer, (err) => {
+        if (err) {
+          console.log(err);
+        console.log("error with file");
+        }
+      });
+      bucket.upload(tempFilePath, {
+        destination: "images/image2.jpg",
+        metadata: {
+          contentType: 'image/jpeg'
+        }
+      });
+      file.save(buffer, {
+        metadata: {
+          contentType: 'image/jpeg'
+        },
+        public: true,
+        validation: "md5"
+      }, (err) => {
+        if (err) {
+          console.log("error: " + err);
+        } else {
+          // The file upload is complete.
+          console.log("successfuly uploaded");
+        }
+      });
+    });
   });
 }
 

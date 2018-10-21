@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "images": {
+      ".write": "true",
+      ".read": "true"
+    }
+  }
+}
