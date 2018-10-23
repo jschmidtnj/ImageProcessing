@@ -62,8 +62,8 @@
 
 <section id="alerts">
     <div class="container" id="alertscontainer" style="position:fixed; z-index:1; margin:5%;">
-        <div class="alert alert-danger collapse" role="alert" id="alertsignoutfailure">
-            <h5 class="alert-heading">Error</h5>
+        <div class="alert alert-danger collapse" role="alert" id="alertsubmitfailure">
+            <h5 class="alert-heading">Error with file submission</h5>
             <hr>
             <p class="mb-0">
                 <div id="error-info"></div>
@@ -97,9 +97,36 @@
             <br />
             <br />
             <br />
-            <h4>Dashboard</h4>
             <br />
             <br />
+            <h4>Upload File</h4>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="row justify-content-center">
+                <div class="col-sm-5">
+                    <input type="file" id="fileinput">
+                </div>
+                <div class="col-sm-5">
+                    <button id="inputFileSubmit" type="inputFile" value="inputFile" class="btn btn-primary btn-block onclick=" void(0) "">
+                        Submit
+                    </button>
+                </div>
+            </div>
+            <br />
+            <div id="loadingimage" class="collapse">
+                <br />
+                <br />
+                <br />
+                <img src="assets/icons/loading_icons/pacman.svg" style="width:150px;">
+            </div>
+            <div id="resultimagediv" class="collapse">
+                    <br />
+                    <br />
+                    <img id="resultimage">
+            </div>
         </main>
     </div>
 
