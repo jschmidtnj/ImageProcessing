@@ -2,6 +2,10 @@
 
 This application is created with Firebase, Bootstrap, Vuejs, jQuery, and vanilla html. No framework was used, due to initial compatability issues. The goal is for the frontend to be serverless, and to use cloud-functions to fill in the gaps. In order for this website to have secure database calls without a server, database rules were added in firebase to ensure that only users who login from a verified domain email have the ability to view and add data. Follow the steps below for installation and testing.
 
+## deploy to github pages
+
+Run this in git `git subtree push --prefix frontend-app/dist/ origin gh-pages` to create branch and github pages.
+
 ## generate static distribution files
 
 First clone the repository (it works best in linux): `git clone --recursive https://<github-account-name>:<github-account-token>@github.com/jschmidtnj/healthblock.git && git submodule add --force ../healthblock.wiki.git wiki && cd wiki && git pull origin master && cd .. && ls`.  
