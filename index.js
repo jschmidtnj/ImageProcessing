@@ -9,6 +9,7 @@ var fs = require('fs');
 var path = require('path');
 var os = require("os");
 var bucket = admin.storage().bucket();
+var path = require('path');
 
 const promisePool = require('es6-promise-pool');
 const PromisePool = promisePool.PromisePool;
@@ -46,37 +47,13 @@ function createGrayscale(url, outputname) {
     }
     image.write(outputname);
     console.log("finished.");
-      //console.log(res);
-      var file = bucket.file("images/image1.jpg");
-      var buffer = new Buffer(res, 'base64')
-      var fileName = "temp.jpg";
-      const tempFilePath = path.join(os.tmpdir(), fileName);
-      fs.writeFile(tempFilePath, buffer, (err) => {
-        if (err) {
-          console.log(err);
-        console.log("error with file");
-        }
-      });
-      bucket.upload(tempFilePath, {
-        destination: "images/image2.jpg",
-        metadata: {
-          contentType: 'image/jpeg'
-        }
-      });
-      file.save(buffer, {
-        metadata: {
-          contentType: 'image/jpeg'
-        },
-        public: true,
-        validation: "md5"
-      }, (err) => {
-        if (err) {
-          console.log("error: " + err);
-        } else {
-          // The file upload is complete.
-          console.log("successfuly uploaded");
-        }
-      });
+    //console.log(res);
+    var fileName = "outputname";
+    bucket.upload(outputname, {
+      destination: outputname,
+      metadata: {
+        contentType: 'image/jpeg'
+      }
     });
   });
 }

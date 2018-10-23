@@ -41,7 +41,7 @@
 
     "no-extra-label": 1,
 
-    "no-floating-decimal": 2,
+    "no-floating-decimal": 0,
 
     "no-implicit-coercion": 1,
 

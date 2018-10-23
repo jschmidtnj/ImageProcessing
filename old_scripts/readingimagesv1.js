@@ -103,7 +103,38 @@ Jimp.read(url, function (err, image) {
     }
   }
   image.write('image1.jpg')
-  
+  image.getBase64(Jimp.AUTO, (err, res) => {
+    //console.log(res);
+    var file = bucket.file("images/image1.jpg");
+    var buffer = new Buffer(res, 'base64')
+    var fileName = "temp.jpg";
+    const tempFilePath = path.join(os.tmpdir(), fileName);
+    fs.writeFile(tempFilePath, buffer, (err) => {
+      if (err) {
+
+      }
+    });
+    bucket.upload(tempFilePath, {
+      destination: "images/image2.jpg",
+      metadata: {
+        contentType: 'image/jpeg'
+      }
+    });
+    file.save(buffer, {
+      metadata: {
+        contentType: 'image/jpeg'
+      },
+      public: true,
+      validation: "md5"
+    }, (err) => {
+      if (err) {
+        console.log("error: " + err);
+      } else {
+        // The file upload is complete.
+        console.log("successfuly uploaded");
+      }
+    });
+  });
 });
 
 

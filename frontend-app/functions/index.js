@@ -3,28 +3,88 @@ const config = require('./config/config');
 const admin = require('firebase-admin');
 admin.initializeApp({
     credential: admin.credential.cert(config.firebaseadmin),
-    databaseURL: config.other.databaseurl
+    databaseURL: config.other.databaseurl,
+    storageBucket: config.other.storagebucket
 });
+var Jimp = require('jimp');
+var bucket = admin.storage().bucket();
+var fs = require("fs");
+var os = require('os');
+var path = require('path');
 
 const promisePool = require('es6-promise-pool');
 const PromisePool = promisePool.PromisePool;
-const secureCompare = require('secure-compare');
+//const secureCompare = require('secure-compare');
 
-var secretKey = config.other.secretKey;
+//var secretKey = config.other.secretKey;
 
-//see https://github.com/firebase/functions-samples/tree/master/delete-unused-accounts-cron for more details
-exports.facerecognition = functions.https.onRequest((req, res) => {
-    //console.log(MAX_CONCURRENT);
-    const key = req.query.key;
-    // Exit if the keys don't match.
-    if (!secureCompare(key, functions.config().cron.key)) {
-        console.log('The key provided in the request does not match the key set in the environment. Check that', key,
-            'matches the cron.key attribute in `firebase env:get`');
-        res.status(403).send('Security key does not match. Make sure your "key" URL query parameter matches the ' +
-            'cron.key environment variable.');
-        return null;
-    }
-
-    res.send('face recognition finished');
-    return null;
+exports.facedetect = functions.https.onCall((data, context) => {
+    const url = data.url;
+    const outputname = data.outputname;
+    console.log(url, outputname);
+    var status = "";
+    return convertToGrayscale(url, outputname);
 });
+
+function convertToGrayscale(url, outputname) {
+    return new Promise((resolve, reject) => {
+        Jimp.read(url, (err, image) => {
+            if (err) {
+                console.log(err);
+                return null;
+            }
+            console.log("getting image");
+            //console.log(image.bitmap.data)
+            var xdim = image.bitmap.width;
+            var ydim = image.bitmap.height;
+            var grayscaleconstants = config.other.imagegrayscaleconstants;
+            console.log(grayscaleconstants);
+    
+            for (var x = 0; x < xdim; x++) {
+                for (var y = 0; y < ydim; y++) {
+                    var pixelcolor = image.getPixelColor(x, y);
+                    var rgba = Jimp.intToRGBA(pixelcolor);
+                    var newvals = [];
+                    for (var i = 0; i < grayscaleconstants.length; i++) {
+                        var value = 0;
+                        value = value + grayscaleconstants[i][0] * rgba.r;
+                        value = value + grayscaleconstants[i][1] * rgba.g;
+                        value = value + grayscaleconstants[i][2] * rgba.b;
+                        newvals.push(value);
+                    }
+                    var hexval = Jimp.rgbaToInt(newvals[0], newvals[0], newvals[0], 255);
+                    image.setPixelColor(hexval, x, y);
+                }
+            }
+            var imagename = outputname + ".jpg";
+            const tempFilePath = path.join(os.tmpdir(), imagename);
+            image.write(tempFilePath, (err) => {
+                if (err !== null) {
+                    console.log(err);
+                    status = "failed image write";
+                    reject(err);
+                }
+            });
+            console.log("finished.");
+            var destination = "outputimages/" + imagename;
+            return bucket.upload(tempFilePath, {
+                destination: destination,
+                metadata: {
+                    contentType: 'image/jpeg'
+                }
+            }).then(() => {
+                console.log("delete file");
+                fs.unlinkSync(tempFilePath);
+                status = "success";
+                resolve({
+                    status: status
+                });
+                return null;
+            }).catch((err) => {
+                console.log(err);
+                status = "failed reupload";
+                reject(err);
+            });
+        });
+    });
+}
