@@ -58,4 +58,4 @@ function createGrayscale(url, outputname) {
   });
 }
 
-createGrayscale(url, "images/image1.jpg");
+createGrayscale(url, "generated/image1.jpg");

@@ -115,4 +115,4 @@ config.js
 # image files
 *.jpg
 *.png
-images/
+generated/
