@@ -163,6 +163,26 @@
                     <br />
                     <img id="resultimage">
             </div>
+            <div id="selectcollapse" class="collapse">
+                <p>Add Filter</p>
+                <select class="selectpicker filterSelect" data-live-search="true" id="filterSelect">
+                    <option data-tokens="grayscale" value="grayscale">grayscale</option>
+                    <option data-tokens="none" value="">none</option>
+                </select>
+                <br />
+                <div id="nofilterwarning">
+                    <p>No filter selected</p>
+                </div>
+                <br />
+                <div class="row justify-content-center">
+                    <div class="col-sm-2">
+                        <button id="addFilter" type="addFilter" value="addFilter"
+                            class="btn btn-primary btn-block onclick=" void(0) "">
+                            Apply
+                        </button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
