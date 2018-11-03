@@ -4,6 +4,9 @@ require("popper.js");
 require("bootstrap");
 window.$ = window.jQuery = jQuery;
 
+require("bootstrap-select");
+require("bootstrap-select/dist/css/bootstrap-select.css");
+
 var config = require('../../../config/config.json');
 
 var firebase = require("firebase/app");
@@ -114,6 +117,7 @@ $(document).ready(function () {
     }
 
     function submitFile() {
+        $("#selectcollapse").addClass("collapse");
         $("#resultimagediv").addClass("collapse");
         $("#loadingimage").removeClass("collapse");
         //window.filename = uuidv4() + ".jpg";
@@ -132,9 +136,73 @@ $(document).ready(function () {
             // console.log(window.filename);
             // console.log(data);
             createJimpFile(data);
+            console.log("creating filter select");
+            createFilterSelect();
         }).catch(function (err) {
             console.log('Error: ', err);
         });
+    }
+
+    function createFilterSelect() {
+        console.log("creating select");
+        $('#filterSelect').selectpicker('destroy');
+        $('#filterSelect').selectpicker();
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+            $('#filterSelect').selectpicker('mobile');
+        }
+        $(".selectpicker").selectpicker("val", "");
+        $('#filterSelect').selectpicker("refresh");
+        //console.log("location select: " + locationSelectString);
+        $('.filterSelect').on("change", function (elem) {
+            $("#nofilterwarning").addClass("collapse");
+            // on select update locationSelect variable
+            //console.log($(this));
+            console.log("changed value");
+            var filterSelect = elem.target.value;
+            console.log("selected " + filterSelect);
+            //console.log(filterSelect);
+            window.filterSelect = filterSelect;
+            if (window.filterSelect == "") {
+                $('#nofilterwarning').removeClass("collapse");
+            } else {
+                $('#nofilterwarning').addClass("collapse");
+            }
+        });
+        $("#addFilter").on('click touchstart', function () {
+            console.log("add filter");
+            switch (window.filterSelect) {
+                case "grayscale":
+                    $('#nofilterwarning').addClass("collapse");
+                    console.log("making it grayscale");
+                    convertToGrayscale();
+                    updateImageSrc();
+                    break;
+            }
+        });
+        $("#selectcollapse").removeClass("collapse");
+    }
+
+    function convertToGrayscale() {
+        var grayscaleconstants = config.other.imagegrayscaleconstants;
+        console.log(grayscaleconstants);
+
+        for (var x = 0; x < window.width; x++) {
+            for (var y = 0; y < window.height; y++) {
+                var pixelcolor = window.image.getPixelColor(x, y);
+                var rgba = Jimp.intToRGBA(pixelcolor);
+                var newvals = [];
+                for (var i = 0; i < grayscaleconstants.length; i++) {
+                    var value = 0;
+                    value = value + grayscaleconstants[i][0] * rgba.r;
+                    value = value + grayscaleconstants[i][1] * rgba.g;
+                    value = value + grayscaleconstants[i][2] * rgba.b;
+                    newvals.push(value);
+                }
+                var hexval = Jimp.rgbaToInt(newvals[0], newvals[0], newvals[0], 255);
+                window.image.setPixelColor(hexval, x, y);
+            }
+        }
+        console.log("finished");
     }
 
     function createJimpFile(file) {
@@ -144,7 +212,7 @@ $(document).ready(function () {
                 handleError(err);
             } else {
                 //console.log("getting image");
-                window.theimage = image;
+                window.image = image;
                 window.width = image.bitmap.width;
                 window.height = image.bitmap.height;
                 //console.log(image.bitmap.data);
@@ -155,18 +223,18 @@ $(document).ready(function () {
     }
 
     function updateImageSrc() {
-        window.theimage.getBase64(Jimp.MIME_JPEG, function (err, src) {
+        window.image.getBase64(Jimp.MIME_JPEG, function (err, src) {
             if (err) {
                 // console.log(err.message);
                 handleError(err);
             }
-            //console.log("got base64");
+            // console.log("got base64");
             $("#loadingimage").addClass("collapse");
-            //console.log(src);
+            // console.log(src);
             $("#resultimage").attr("src", src);
-            //console.log("added src");
+            // console.log("added src");
             $("#resultimagediv").removeClass("collapse");
-            //console.log("updated.");
+            // console.log("updated.");
         });
     }
 

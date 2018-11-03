@@ -21,12 +21,13 @@ const PromisePool = promisePool.PromisePool;
 exports.facedetect = functions.https.onCall((data, context) => {
     const url = data.url;
     const outputname = data.outputname;
+    const uid = data.uid;
     console.log(url, outputname);
     var status = "";
-    return convertToGrayscale(url, outputname);
+    return convertToGrayscale(url, outputname, uid);
 });
 
-function convertToGrayscale(url, outputname) {
+function convertToGrayscale(url, outputname, uid) {
     return new Promise((resolve, reject) => {
         Jimp.read(url, (err, image) => {
             if (err) {
@@ -66,7 +67,7 @@ function convertToGrayscale(url, outputname) {
                 }
             });
             console.log("finished.");
-            var destination = "outputimages/" + imagename;
+            var destination = "users/" + uid + "/outputimages/" + imagename;
             return bucket.upload(tempFilePath, {
                 destination: destination,
                 metadata: {

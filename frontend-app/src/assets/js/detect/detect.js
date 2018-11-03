@@ -48,6 +48,7 @@ $(document).ready(function () {
         if (user) {
             //console.log("signed in");
             window.user = user;
+            window.userId = user.uid;
             signed_in_initially = true;
             $("#collapseall").removeClass("collapse");
             createDetect();
@@ -106,7 +107,7 @@ $(document).ready(function () {
                 contentType: 'image/jpeg',
             };
             var storageRef = firebase.storage().ref();
-            var uploadTask = storageRef.child("images/" + uniqueid + ".jpg").put(file, metadata);
+            var uploadTask = storageRef.child("users/" + window.userId + "/inputimages/" + uniqueid + ".jpg").put(file, metadata);
             // Register three observers:
             // 1. 'state_changed' observer, called any time the state changes
             // 2. Error observer, called on failure
@@ -138,12 +139,13 @@ $(document).ready(function () {
                     var getfile = firebase.functions().httpsCallable('facedetect');
                     getfile({
                         url: downloadURL,
-                        outputname: uniqueid
+                        outputname: uniqueid,
+                        uid: window.userId
                     }).then(function (result) {
                         // Read result of the Cloud Function.
                         //console.log(result);
                         console.log("getting image");
-                        firebase.storage().ref("outputimages/" + uniqueid + ".jpg").getDownloadURL().then(function (imagesrc) {
+                        firebase.storage().ref("users/" + window.userId + "/outputimages/" + uniqueid + ".jpg").getDownloadURL().then(function (imagesrc) {
                             console.log("getting final image");
                             console.log(imagesrc);
                             $("#resultimage").attr('src', imagesrc);

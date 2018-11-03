@@ -259,7 +259,6 @@ $(document).ready(function () {
             $("#expandForm").removeClass("collapse");
             expandedForm = 1;
         }
-        $("#expandSecretKey").removeClass("collapse");
         validateForm();
     }
 });
