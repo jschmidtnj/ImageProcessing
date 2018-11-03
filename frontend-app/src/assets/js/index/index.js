@@ -10,7 +10,11 @@ var firebase = require("firebase/app");
 require("firebase/database");
 require("firebase/storage");
 require("firebase/functions");
+require("firebase/auth");
 firebase.initializeApp(config.firebase);
+
+//get Jimp
+var Jimp = require("jimp");
 
 function handleError(error) {
     // Handle Errors here.
@@ -40,93 +44,136 @@ $(document).ready(function () {
     $('#privacypolicylink').attr('href', config.other.privacyPolicyUrl);
     $('#helplink').attr('href', config.other.helpPageUrl);
 
+    var signed_in_initially = false;
+
+    function handleLogout() {
+        firebase.auth().signOut().then(function () {
+            // Sign-out successful.
+        }).catch(function (error) {
+            // An error happened.
+            handleError(error);
+        });
+    }
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            $("#collapseLoggedInNavbar").removeClass("collapse");
+            $("#collapseLoggedOutNavbar").addClass("collapse");
+            window.email = user.email;
+            window.userId = firebase.auth().currentUser.uid;
+            // User is signed in.
+            //console.log("signed in");
+            var handledLogout = false;
+            $("#logoutButton").on('click touchstart', function (e) {
+                e.stopImmediatePropagation();
+                if (e.type == "touchstart") {
+                    handledLogout = true;
+                    handleLogout();
+                } else if (e.type == "click" && !handledLogout) {
+                    handleLogout();
+                } else {
+                    handledLogout = false;
+                }
+                return false;
+            });
+        } else {
+            $("#collapseLoggedInNavbar").addClass("collapse");
+            $("#collapseLoggedOutNavbar").removeClass("collapse");
+            window.email = "";
+            window.userId = "";
+            // User is signed out.
+            //console.log("signed out");
+        }
+    });
+
     var submittedFile = false;
     $("#inputFileSubmit").on('click touchstart', function (e) {
         e.stopImmediatePropagation();
         if (e.type == "touchstart") {
             submittedFile = true;
             submitFile();
-        }
-        else if (e.type == "click" && !submittedFile) {
+        } else if (e.type == "click" && !submittedFile) {
             submitFile();
-        }
-        else {
+        } else {
             submittedFile = false;
         }
         return false;
     });
 
+    var fileData;
+
+    function getBuffer(resolve) {
+        var reader = new FileReader();
+        reader.readAsArrayBuffer(fileData);
+        reader.onload = function () {
+            var arrayBuffer = reader.result;
+            // var bytes = new Uint8Array(arrayBuffer);
+            // var binaryString = String.fromCharCode.apply(null, bytes);
+            resolve(arrayBuffer);
+        };
+    }
+
     function submitFile() {
-        var docelem = document.getElementById("fileinput");
-        var file = docelem.files[0];
-        console.log(file);
         $("#resultimagediv").addClass("collapse");
         $("#loadingimage").removeClass("collapse");
-        var uniqueid = uuidv4();
-        console.log("added unique id");
-        console.log(uniqueid);
-        var metadata = {
-            contentType: 'image/jpeg',
-        };
-        var storageRef = firebase.storage().ref();
-        var uploadTask = storageRef.child("images/" + uniqueid + ".jpg").put(file, metadata);
-        // Register three observers:
-        // 1. 'state_changed' observer, called any time the state changes
-        // 2. Error observer, called on failure
-        // 3. Completion observer, called on successful completion
-        console.log("uploading");
-        uploadTask.on('state_changed', function (snapshot) {
-            console.log("starting progress report");
-            // Observe state change events such as progress, pause, and resume
-            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log('Upload is ' + progress + '% done');
-            switch (snapshot.state) {
-                case firebase.storage.TaskState.PAUSED: // or 'paused'
-                    console.log('Upload is paused');
-                    break;
-                case firebase.storage.TaskState.RUNNING: // or 'running'
-                    console.log('Upload is running');
-                    break;
+        //window.filename = uuidv4() + ".jpg";
+        //console.log("added unique id");
+        var input = document.getElementById('fileinput');
+        window.originalName = input.value.split("\\").pop();
+        // console.log(window.originalName);
+        var files = input.files;
+        // Pass the file to the blob, not the input[0].
+        fileData = new Blob([files[0]]);
+        // Pass getBuffer to promise.
+        var promise = new Promise(getBuffer);
+        // Wait for promise to be resolved, or log error.
+        promise.then(function (data) {
+            // Here you can pass the bytes to another function.
+            // console.log(window.filename);
+            // console.log(data);
+            createJimpFile(data);
+        }).catch(function (err) {
+            console.log('Error: ', err);
+        });
+    }
+
+    function createJimpFile(file) {
+        Jimp.read(file, function (err, image) {
+            if (err) {
+                // console.log(err);
+                handleError(err);
+            } else {
+                //console.log("getting image");
+                window.theimage = image;
+                window.width = image.bitmap.width;
+                window.height = image.bitmap.height;
+                //console.log(image.bitmap.data);
+                //console.log("done with jimp stuff");
+                updateImageSrc();
             }
-        }, function (error) {
-            // Handle unsuccessful uploads
-            console.log(error);
-        }, function () {
-            console.log("uploaded");
-            // Handle successful uploads on complete
-            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-            uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
-                console.log('File available at', downloadURL);
-                var getfile = firebase.functions().httpsCallable('facedetect');
-                getfile({
-                    url: downloadURL,
-                    outputname: uniqueid
-                }).then(function (result) {
-                    // Read result of the Cloud Function.
-                    //console.log(result);
-                    console.log("getting image");
-                    firebase.storage().ref("outputimages/" + uniqueid + ".jpg").getDownloadURL().then(function (imagesrc) {
-                        console.log("getting final image");
-                        console.log(imagesrc);
-                        $("#resultimage").attr('src', imagesrc);
-                        $("#loadingimage").addClass("collapse");
-                        $("#resultimagediv").removeClass("collapse");
-                    }).catch(function (err) {
-                        handleError(err);
-                    });
-                }).catch(function (error) {
-                    // Getting the Error details.
-                    //console.log(error);
-                    handleError(error);
-                });
-            });
+        });
+    }
+
+    function updateImageSrc() {
+        window.theimage.getBase64(Jimp.MIME_JPEG, function (err, src) {
+            if (err) {
+                // console.log(err.message);
+                handleError(err);
+            }
+            //console.log("got base64");
+            $("#loadingimage").addClass("collapse");
+            //console.log(src);
+            $("#resultimage").attr("src", src);
+            //console.log("added src");
+            $("#resultimagediv").removeClass("collapse");
+            //console.log("updated.");
         });
     }
 
     function uuidv4() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            var r = Math.random() * 16 | 0,
+                v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     }

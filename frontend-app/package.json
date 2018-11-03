@@ -8,7 +8,8 @@
     "license": "MIT",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "rm -rf dist && webpack && cp -a src/assets/css dist/assets && cp -a src/html/. dist/ && cp -a src/assets/icons dist/assets && cp -a src/assets/images dist/assets && cp -a src/config dist && cp dist/assets/js/pwa/serviceworker.js dist/serviceworker.js"
+        "build": "rm -rf dist && webpack && cp -a src/assets/css dist/assets && cp -a src/html/. dist/ && cp -a src/assets/icons dist/assets && cp -a src/assets/images dist/assets && cp -a src/config dist && cp dist/assets/js/pwa/serviceworker.js dist/serviceworker.js",
+        "start": "node server.js"
     },
     "keywords": [
         "image-processing",
@@ -32,6 +33,7 @@
     ],
     "devDependencies": {
         "autoprefixer": "^9.0.1",
+        "connect": "^3.6.6",
         "css-loader": "^1.0.0",
         "file-loader": "^1.1.11",
         "node-sass": "^4.9.2",
@@ -39,6 +41,7 @@
         "precss": "^3.1.2",
         "sass-loader": "^7.0.3",
         "scriptjs": "^2.5.8",
+        "serve-static": "^1.13.2",
         "style-loader": "^0.21.0",
         "url-loader": "^1.1.0",
         "webpack": "^4.16.2",
@@ -65,6 +68,7 @@
         "firebase": "^5.3.0",
         "firebaseui": "^3.1.1",
         "font-awesome": "^4.7.0",
+        "jimp": "^0.5.6",
         "jquery": "^3.3.1",
         "jquery-ui": "^1.12.1",
         "jquery-validation": "^1.17.0",
