@@ -8,13 +8,10 @@
             "messagingSenderId": "123456789"
     },
     "regex": {
-            "adminemailregex": "^.*@gmail.com$",
-            "commaseperatedemails": "^((\\s?[^\\s,]+@[^\\s,]+\\.[^\\s,]+\\s?,)*(\\s?[^\\s,]+@[^\\s,]+\\.[^\\s,]+))$",
-            "validemail": "^(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\\"]{2,})$",
-            "fullname": "^(.*\\s+.*)+$",
-            "passwordcontainsletter": "^(.*[a-zA-Z].*)+$",
-            "passwordcontainsnumber": "^(.*[0-9].*)+$",
-            "passwordcontainsspecialcharacter": "^(.*[!@#\\$%\\^&\\*].*)+$"
+        "validemail": "^(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\\"]{2,})$",
+        "passwordcontainsletter": "^(.*[a-zA-Z].*)+$",
+        "passwordcontainsnumber": "^(.*[0-9].*)+$",
+        "passwordcontainsspecialcharacter": "^(.*[!@#\\$%\\^&\\*].*)+$"
     },
     "other": {
             "tosUrl": "https://apple.com",
