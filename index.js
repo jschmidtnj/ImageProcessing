@@ -86,21 +86,24 @@ function fft1d(re, im) {
 }
 
 function fft2d(re, im) {
+  //make sure it's an even number of stuff per row and if not make it even
+  //resize in the future to make it an even number ex Jimp .resize(256, 256)
+  //comment out in the future
+  if (re[0].length % 2 !== 0) {
+    for (var i = 0; i < re.length; i++) {
+      re[i].push(0);
+      im[i].push(0);
+    }
+  }
+  // up to here
   var realcolumns = [];
   var imaginarycolumns = [];
-  for (var i = 0; i < re.length; i++) {
+  for (var i = 0; i < re.length; i++)
     fft1d(re[i], im[i]);
+  for (i = 0; i < re[0].length; i++) {
     realcolumns.push([]);
     imaginarycolumns.push([]);
   }
-  for (i = 0; i < re.length; i++) {
-    for (var j = 0; j < re[i].length; j++) {
-      realcolumns[j].push(re[i][j]);
-      imaginarycolumns[j].push(re[i][j]);
-    }
-  }
-  for (i = 0; i < realcolumns.length; i++)
-    fft1d(realcolumns[i], imaginarycolumns[i]);
   for (i = 0; i < re.length; i++) {
     for (var j = 0; j < re[i].length; j++) {
       realcolumns[j].push(re[i][j]);
@@ -109,7 +112,9 @@ function fft2d(re, im) {
   }
   var realrows = [];
   var imaginaryrows = [];
-  for (var i = 0; i < realcolumns.length; i++) {
+  for (i = 0; i < realcolumns.length; i++)
+    fft1d(realcolumns[i], imaginarycolumns[i]);
+  for (i = 0; i < realcolumns[0].length; i++) {
     realrows.push([]);
     imaginaryrows.push([]);
   }
@@ -132,9 +137,35 @@ function ifft1d(re, im){
 }
 
 function ifft2d(re, im) {
+  var realcolumns = [];
+  var imaginarycolumns = [];
   for (var i = 0; i < re.length; i++)
     ifft1d(re[i], im[i]);
-  return [re, im];
+  for (i = 0; i < re[0].length; i++) {
+    realcolumns.push([]);
+    imaginarycolumns.push([]);
+  }
+  for (i = 0; i < re.length; i++) {
+    for (var j = 0; j < re[i].length; j++) {
+      realcolumns[j].push(re[i][j]);
+      imaginarycolumns[j].push(im[i][j]);
+    }
+  }
+  var realrows = [];
+  var imaginaryrows = [];
+  for (i = 0; i < realcolumns.length; i++)
+    ifft1d(realcolumns[i], imaginarycolumns[i]);
+  for (i = 0; i < realcolumns[0].length; i++) {
+    realrows.push([]);
+    imaginaryrows.push([]);
+  }
+  for (i = 0; i < realcolumns.length; i++) {
+    for (var j = 0; j < realcolumns[i].length; j++) {
+      realrows[j].push(realcolumns[i][j]);
+      imaginaryrows[j].push(imaginarycolumns[i][j]);
+    }
+  }
+  return [realrows, imaginaryrows];
 }
 
 function conv1d(re1, im1, re2, im2) {
@@ -151,14 +182,24 @@ function conv1d(re1, im1, re2, im2) {
 }
 
 function conv2d(re1, im1, re2, im2) {
+  // this is wrong need to redo it with 2d fft
   var reres = [];
   var imres = [];
-  for(i = 0; i < re1.length; i++) {
-    var conv1dres = conv1d(re1[i], im1[i], re2[i], im2[i]);
-    reres.push(conv1dres[0]);
-    imres.push(conv1dres[1]);
+  var fft1 = fft2d(re1, im1);
+  var fft2 = fft2d(re2, im2);
+  for (var i = 0; i < fft1[0].length; i++) {
+    var realrowconv = [];
+    var imaginaryrowconv = [];
+    for (var j = 0; j < fft1[0][i].length; j++) {
+      var reresconv = fft1[0][i][j] * fft2[0][i][j];
+      var imresconv = fft1[1][i][j] * fft2[1][i][j];
+      realrowconv.push(reresconv);
+      imaginaryrowconv.push(imresconv);
+    }
+    reres.push(realrowconv);
+    imres.push(imaginaryrowconv);
   }
-  return [reres, imres];
+  return ifft2d(reres, imres);
 }
 
 re = [1,2,3,4];
@@ -168,17 +209,21 @@ console.log(re, im);
 ifft1d(re, im);
 console.log(re, im);
 
-re2d = [[1,2],[3,4],[5,6]];
-im2d = [[0,0],[0,0],[0,0]];
-fft2d(re2d, im2d);
-console.log(re2d, im2d);
-ifft2d(re2d, im2d);
-console.log(re2d, im2d);
+re2d = [[1,2,6],[3,4,8]];
+im2d = [[0,0,0],[0,0,0]];
+var fft2dres = fft2d(re2d, im2d);
+console.log(fft2dres[0], fft2dres[1]);
+var ifft2dres = ifft2d(fft2dres[0], fft2dres[1]);
+console.log(ifft2dres[0], ifft2dres[1]);
+console.log("done");
 
 var re2 = [0,0,0,0,0];
 var im2 = [0,0,0,0,0];
 console.log(conv1d(re, im, re2, im2));
+console.log("done2");
 
+re12d = [[1,2],[3,4]];
+im12d = [[0,0],[0,0]];
 re2d2 = [[1,0],[0,0]];
 im2d2 = [[0,0],[0,0]];
-console.log(conv2d(re2d, im2d, re2d2, im2d2));
+console.log(conv2d(re12d, im12d, re2d2, im2d2));
