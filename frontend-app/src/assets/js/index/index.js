@@ -390,6 +390,53 @@ $(document).ready(function () {
         //console.log("finished");
     }
 
+    function fft(re, im) {
+        var N = re.length;
+        for (var i = 0; i < N; i++) {
+            for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
+                j = (j << 1) | (h & 1);
+            if (j > i) {
+                re[j] = [re[i], re[i] = re[j]][0]
+                im[j] = [im[i], im[i] = im[j]][0]
+            }
+        }
+        for (var hN = 1; hN * 2 <= N; hN *= 2)
+            for (var i = 0; i < N; i += hN * 2)
+                for (var j = i; j < i + hN; j++) {
+                    var cos = Math.cos(Math.PI * (j - i) / hN),
+                        sin = Math.sin(Math.PI * (j - i) / hN)
+                    var tre = re[j + hN] * cos + im[j + hN] * sin,
+                        tim = -re[j + hN] * sin + im[j + hN] * cos;
+                    re[j + hN] = re[j] - tre;
+                    im[j + hN] = im[j] - tim;
+                    re[j] += tre;
+                    im[j] += tim;
+                }
+        return [re, im];
+    }
+
+    function convolution() {
+        // first do fft, then do convolution, then do inverse
+        // 5 6
+        // 3 4
+        // 1 2
+        // see https://antimatter15.com/2015/05/cooley-tukey-fft-dct-idct-in-under-1k-of-javascript/
+        // also see https://www.nayuki.io/res/fast-discrete-cosine-transform-algorithms/
+        // and https://www.nayuki.io/res/how-to-implement-the-discrete-fourier-transform/
+        // and http://fourier.eng.hmc.edu/e161/lectures/dct/node2.html
+        var result = [];
+        var filter = [
+            [1, 2],
+            [3, 4],
+            [5, 6]
+        ];
+        for (var y = 0; y < window.height + filter.length; y++) {
+            for (var x = 0; x < window.width + filter[0].length; x++) {
+
+            }
+        }
+    }
+
     function createJimpFile(file) {
         Jimp.read(file, function (err, image) {
             if (err) {
