@@ -19,6 +19,10 @@ firebase.initializeApp(config.firebase);
 //get Jimp
 var Jimp = require("jimp");
 
+// get graph stuff (histogram)
+var echarts = require("echarts");
+var ecStat = require("echarts-stat");
+
 function handleError(error) {
     // Handle Errors here.
     var errorCode = error.code;
@@ -138,6 +142,8 @@ $(document).ready(function () {
             createJimpFile(data);
             console.log("creating filter select");
             createFilterSelect();
+            console.log("creating histogram select");
+            createHistogramSelect();
         }).catch(function (err) {
             console.log('Error: ', err);
         });
@@ -150,7 +156,8 @@ $(document).ready(function () {
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
             $('#filterSelect').selectpicker('mobile');
         }
-        $(".selectpicker").selectpicker("val", "");
+        $("#filterSelect").selectpicker("val", "");
+        $("#filterSelect").val("");
         $('#filterSelect').selectpicker("refresh");
         //console.log("location select: " + locationSelectString);
         $('.filterSelect').on("change", function (elem) {
@@ -180,6 +187,179 @@ $(document).ready(function () {
             }
         });
         $("#selectcollapse").removeClass("collapse");
+    }
+
+    function createHistogramSelect() {
+        console.log("creating histo select");
+        $('#histogramSelect').selectpicker('destroy');
+        $('#histogramSelect').selectpicker();
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+            $('#histogramSelect').selectpicker('mobile');
+        }
+        $("#histogramSelect").selectpicker("val", "");
+        $('#histogramSelect').selectpicker("refresh");
+        $('.histogramSelect').on("change", function (elem) {
+            $("#nohistogramwarning").addClass("collapse");
+            // on select update histogramselect variable
+            //console.log($(this));
+            console.log("changed value");
+            var histogramselect = elem.target.value;
+            console.log("selected " + histogramselect);
+            //console.log(histogramselect);
+            window.histogramselect = histogramselect;
+            if (window.histogramselect == "") {
+                $('#nohistogramwarning').removeClass("collapse");
+            } else {
+                $('#nohistogramwarning').addClass("collapse");
+            }
+        });
+        $("#viewHistogram").on('click touchstart', function () {
+            console.log("add histogram");
+            switch (window.histogramselect) {
+                case "luminance":
+                    console.log("luminance");
+                    createHistogramData(window.histogramselect);
+                    break;
+                case "brightness":
+                    console.log("brightness");
+                    createHistogramData(window.histogramselect);
+                    break;
+                case "perceived_brightness":
+                    console.log("perceived_brightness");
+                    createHistogramData(window.histogramselect);
+                    break;
+                case "red":
+                    console.log("red");
+                    createHistogramData(window.histogramselect);
+                    break;
+                case "green":
+                    console.log("green");
+                    createHistogramData(window.histogramselect);
+                    break;
+                case "blue":
+                    console.log("blue");
+                    createHistogramData(window.histogramselect);
+                    break;
+            }
+            if (window.histogramselect == "") {
+                $("#histogramcollapse").addClass("collapse");
+            } else {
+                $("#histogramcollapse").removeClass("collapse");
+            }
+        });
+        $("#histogramselectcollapse").removeClass("collapse");
+    }
+
+    function createHistogramData(mode) {
+        // https://stackoverflow.com/a/596243
+        // luminance = (0.2126*R + 0.7152*G + 0.0722*B)
+        luminance = [];
+        // brightness = (0.299*R + 0.587*G + 0.114*B)
+        brightness = [];
+        // perceived brightness = sqrt( 0.299*R^2 + 0.587*G^2 + 0.114*B^2)
+        perceived_brightness = [];
+        // red histogram
+        red = [];
+        // green histogram
+        green = [];
+        // blue histogram
+        blue = [];
+        //console.log("making data");
+        //console.log(mode);
+        //console.log(window.width, window.height);
+        for (var x = 0; x < window.width; x++) {
+            for (var y = 0; y < window.height; y++) {
+                var pixelcolor = window.image.getPixelColor(x, y);
+                var rgba = Jimp.intToRGBA(pixelcolor);
+                switch (mode) {
+                    case "luminance":
+                        luminance.push(0.2126 * rgba.r + 0.7152 * rgba.g + 0.0722 * rgba.b);
+                        break;
+                    case "brightness":
+                        brightness.push(0.299 * rgba.r + 0.587 * rgba.g + 0.114 * rgba.b);
+                        break;
+                    case "perceived_brightness":
+                        perceived_brightness.push(0.299 * rgba.r + 0.587 * rgba.g + 0.114 * rgba.b);
+                        break;
+                    case "red":
+                        red.push(rgba.r);
+                        break;
+                    case "green":
+                        green.push(rgba.g);
+                        break;
+                    case "blue":
+                        blue.push(rgba.b);
+                        break;
+                }
+            }
+        }
+        //console.log("got data");
+        //console.log(luminance, brightness, perceived_brightness, red, green, blue);
+        var customtitle = "";
+        var data = [];
+        switch (mode) {
+            case "luminance":
+                customtitle = "Luminance";
+                data = luminance;
+            case "brightness":
+                customtitle = "Brightness";
+                data = brightness;
+            case "perceived_brightness":
+                customtitle = "Perceived Brightness";
+                data = perceived_brightness;
+            case "red":
+                customtitle = "Red";
+                data = red;
+            case "green":
+                customtitle = "Green";
+                data = green;
+            case "blue":
+                customtitle = "Blue";
+                data = blue;
+        }
+        //console.log("got data and title");
+        var myChart = echarts.init(document.getElementById('histogram'));
+        //console.log("got div");
+        var bins = ecStat.histogram(data);
+        //console.log("added data to ecStat");
+        var option = {
+            title: {
+                text: customtitle,
+                left: 'center',
+                top: 20
+            },
+            color: ['rgb(25, 183, 207)'],
+            grid: {
+                left: '3%',
+                right: '3%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [{
+                type: 'value',
+                scale: true
+            }],
+            yAxis: [{
+                type: 'value'
+            }],
+            series: [{
+                name: 'height',
+                type: 'bar',
+                barWidth: '99.3%',
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'insideTop',
+                        formatter: function (params) {
+                            return params.value[1];
+                        }
+                    }
+                },
+                data: bins.data
+            }]
+        };
+        //console.log("create histogram");
+        myChart.setOption(option);
     }
 
     function convertToGrayscale() {

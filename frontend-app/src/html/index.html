@@ -166,8 +166,8 @@
             <div id="selectcollapse" class="collapse">
                 <p>Add Filter</p>
                 <select class="selectpicker filterSelect" data-live-search="true" id="filterSelect">
-                    <option data-tokens="grayscale" value="grayscale">grayscale</option>
                     <option data-tokens="none" value="">none</option>
+                    <option data-tokens="grayscale" value="grayscale">grayscale</option>
                 </select>
                 <br />
                 <div id="nofilterwarning">
@@ -181,6 +181,36 @@
                             Apply
                         </button>
                     </div>
+                </div>
+            </div>
+            <div id="histogramselectcollapse" class="collapse">
+                <p>View Histogram</p>
+                <select class="selectpicker histogramSelect" data-live-search="true" id="histogramSelect">
+                    <option data-tokens="none" value="">none</option>
+                    <option data-tokens="luminance" value="luminance">luminance</option>
+                    <option data-tokens="brightness" value="brightness">brightness</option>
+                    <option data-tokens="perceived brightness" value="perceived_brightness">perceived brightness</option>
+                    <option data-tokens="red" value="red">red</option>
+                    <option data-tokens="green" value="green">green</option>
+                    <option data-tokens="blue" value="blue">blue</option>
+                </select>
+                <br />
+                <div id="nohistogramwarning">
+                    <p>No histogram selected</p>
+                </div>
+                <br />
+                <div class="row justify-content-center">
+                    <div class="col-sm-2">
+                        <button id="viewHistogram" type="viewHistogram" value="viewHistogram"
+                            class="btn btn-primary btn-block onclick=" void(0) "">
+                            View
+                        </button>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <div id="histogramcollapse">
+                    <div id="histogram" style="width: 600px;height:400px;"></div>
                 </div>
             </div>
         </main>
