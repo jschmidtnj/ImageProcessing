@@ -128,7 +128,7 @@ $(document).ready(function () {
         //console.log("added unique id");
         var input = document.getElementById('fileinput');
         window.originalName = input.value.split("\\").pop();
-        // console.log(window.originalName);
+        //console.log(window.originalName);
         var files = input.files;
         // Pass the file to the blob, not the input[0].
         fileData = new Blob([files[0]]);
@@ -137,36 +137,34 @@ $(document).ready(function () {
         // Wait for promise to be resolved, or log error.
         promise.then(function (data) {
             // Here you can pass the bytes to another function.
-            // console.log(window.filename);
-            // console.log(data);
+            //console.log(window.filename);
+            //console.log(data);
             createJimpFile(data);
-            console.log("creating filter select");
+            //console.log("creating filter select");
             createFilterSelect();
-            console.log("creating histogram select");
+            //console.log("creating histogram select");
             createHistogramSelect();
         }).catch(function (err) {
-            console.log('Error: ', err);
+            //console.log('Error: ', err);
         });
     }
 
     function createFilterSelect() {
-        console.log("creating select");
+        //console.log("creating select");
         $('#filterSelect').selectpicker('destroy');
         $('#filterSelect').selectpicker();
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
             $('#filterSelect').selectpicker('mobile');
         }
         $("#filterSelect").selectpicker("val", "");
-        $("#filterSelect").val("");
         $('#filterSelect').selectpicker("refresh");
-        //console.log("location select: " + locationSelectString);
         $('.filterSelect').on("change", function (elem) {
             $("#nofilterwarning").addClass("collapse");
             // on select update locationSelect variable
             //console.log($(this));
-            console.log("changed value");
+            //console.log("changed value");
             var filterSelect = elem.target.value;
-            console.log("selected " + filterSelect);
+            //console.log("selected " + filterSelect);
             //console.log(filterSelect);
             window.filterSelect = filterSelect;
             if (window.filterSelect == "") {
@@ -176,11 +174,11 @@ $(document).ready(function () {
             }
         });
         $("#addFilter").on('click touchstart', function () {
-            console.log("add filter");
+            //console.log("add filter");
             switch (window.filterSelect) {
                 case "grayscale":
                     $('#nofilterwarning').addClass("collapse");
-                    console.log("making it grayscale");
+                    //console.log("making it grayscale");
                     convertToGrayscale();
                     updateImageSrc();
                     break;
@@ -190,7 +188,7 @@ $(document).ready(function () {
     }
 
     function createHistogramSelect() {
-        console.log("creating histo select");
+        //console.log("creating histo select");
         $('#histogramSelect').selectpicker('destroy');
         $('#histogramSelect').selectpicker();
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
@@ -202,9 +200,9 @@ $(document).ready(function () {
             $("#nohistogramwarning").addClass("collapse");
             // on select update histogramselect variable
             //console.log($(this));
-            console.log("changed value");
+            //console.log("changed value");
             var histogramselect = elem.target.value;
-            console.log("selected " + histogramselect);
+            //console.log("selected " + histogramselect);
             //console.log(histogramselect);
             window.histogramselect = histogramselect;
             if (window.histogramselect == "") {
@@ -214,30 +212,30 @@ $(document).ready(function () {
             }
         });
         $("#viewHistogram").on('click touchstart', function () {
-            console.log("add histogram");
+            //console.log("add histogram");
             switch (window.histogramselect) {
                 case "luminance":
-                    console.log("luminance");
+                    //console.log("luminance");
                     createHistogramData(window.histogramselect);
                     break;
                 case "brightness":
-                    console.log("brightness");
+                    //console.log("brightness");
                     createHistogramData(window.histogramselect);
                     break;
                 case "perceived_brightness":
-                    console.log("perceived_brightness");
+                    //console.log("perceived_brightness");
                     createHistogramData(window.histogramselect);
                     break;
                 case "red":
-                    console.log("red");
+                    //console.log("red");
                     createHistogramData(window.histogramselect);
                     break;
                 case "green":
-                    console.log("green");
+                    //console.log("green");
                     createHistogramData(window.histogramselect);
                     break;
                 case "blue":
-                    console.log("blue");
+                    //console.log("blue");
                     createHistogramData(window.histogramselect);
                     break;
             }
@@ -296,27 +294,34 @@ $(document).ready(function () {
         //console.log("got data");
         //console.log(luminance, brightness, perceived_brightness, red, green, blue);
         var customtitle = "";
-        var data = [];
+        var data;
         switch (mode) {
             case "luminance":
                 customtitle = "Luminance";
                 data = luminance;
+                break;
             case "brightness":
                 customtitle = "Brightness";
                 data = brightness;
+                break;
             case "perceived_brightness":
                 customtitle = "Perceived Brightness";
                 data = perceived_brightness;
+                break;
             case "red":
                 customtitle = "Red";
                 data = red;
+                break;
             case "green":
                 customtitle = "Green";
                 data = green;
+                break;
             case "blue":
                 customtitle = "Blue";
                 data = blue;
+                break;
         }
+        //console.log(data);
         //console.log("got data and title");
         var myChart = echarts.init(document.getElementById('histogram'));
         //console.log("got div");
@@ -364,7 +369,7 @@ $(document).ready(function () {
 
     function convertToGrayscale() {
         var grayscaleconstants = config.other.imagegrayscaleconstants;
-        console.log(grayscaleconstants);
+        //console.log(grayscaleconstants);
 
         for (var x = 0; x < window.width; x++) {
             for (var y = 0; y < window.height; y++) {
@@ -382,13 +387,13 @@ $(document).ready(function () {
                 window.image.setPixelColor(hexval, x, y);
             }
         }
-        console.log("finished");
+        //console.log("finished");
     }
 
     function createJimpFile(file) {
         Jimp.read(file, function (err, image) {
             if (err) {
-                // console.log(err);
+                //console.log(err);
                 handleError(err);
             } else {
                 //console.log("getting image");
@@ -405,16 +410,16 @@ $(document).ready(function () {
     function updateImageSrc() {
         window.image.getBase64(Jimp.MIME_JPEG, function (err, src) {
             if (err) {
-                // console.log(err.message);
+                //console.log(err.message);
                 handleError(err);
             }
-            // console.log("got base64");
+            //console.log("got base64");
             $("#loadingimage").addClass("collapse");
-            // console.log(src);
+            //console.log(src);
             $("#resultimage").attr("src", src);
-            // console.log("added src");
+            //console.log("added src");
             $("#resultimagediv").removeClass("collapse");
-            // console.log("updated.");
+            //console.log("updated.");
         });
     }
 
