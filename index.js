@@ -1,9 +1,9 @@
 const config = require('./frontend-app/functions/config/config');
 const admin = require('firebase-admin');
 admin.initializeApp({
-    credential: admin.credential.cert(config.firebaseadmin),
-    databaseURL: config.other.databaseurl,
-    storageBucket: config.other.storagebucket
+  credential: admin.credential.cert(config.firebaseadmin),
+  databaseURL: config.other.databaseurl,
+  storageBucket: config.other.storagebucket
 });
 var fs = require('fs');
 var path = require('path');
@@ -28,10 +28,10 @@ function createGrayscale(url, outputname) {
     var ydim = image.bitmap.height;
     var grayscaleconstants = config.other.imagegrayscaleconstants
     //console.log(grayscaleconstants);
-  
+
     for (var x = 0; x < xdim; x++) {
       for (var y = 0; y < ydim; y++) {
-        var pixelcolor = image.getPixelColor(x,y);
+        var pixelcolor = image.getPixelColor(x, y);
         var rgba = Jimp.intToRGBA(pixelcolor);
         var newvals = [];
         for (var i = 0; i < grayscaleconstants.length; i++) {
@@ -63,25 +63,25 @@ function createGrayscale(url, outputname) {
 function fft1d(re, im) {
   var N = re.length;
   for (var i = 0; i < N; i++) {
-      for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
-          j = (j << 1) | (h & 1);
-      if (j > i) {
-          re[j] = [re[i], re[i] = re[j]][0];
-          im[j] = [im[i], im[i] = im[j]][0];
-      }
+    for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
+      j = (j << 1) | (h & 1);
+    if (j > i) {
+      re[j] = [re[i], re[i] = re[j]][0];
+      im[j] = [im[i], im[i] = im[j]][0];
+    }
   }
   for (var hN = 1; hN * 2 <= N; hN *= 2)
-      for (i = 0; i < N; i += hN * 2)
-          for (j = i; j < i + hN; j++) {
-              var cos = Math.cos(Math.PI * (j - i) / hN),
-                  sin = Math.sin(Math.PI * (j - i) / hN);
-              var tre = re[j + hN] * cos + im[j + hN] * sin,
-                  tim = -re[j + hN] * sin + im[j + hN] * cos;
-              re[j + hN] = re[j] - tre;
-              im[j + hN] = im[j] - tim;
-              re[j] += tre;
-              im[j] += tim;
-          }
+    for (i = 0; i < N; i += hN * 2)
+      for (j = i; j < i + hN; j++) {
+        var cos = Math.cos(Math.PI * (j - i) / hN),
+          sin = Math.sin(Math.PI * (j - i) / hN);
+        var tre = re[j + hN] * cos + im[j + hN] * sin,
+          tim = -re[j + hN] * sin + im[j + hN] * cos;
+        re[j + hN] = re[j] - tre;
+        im[j + hN] = im[j] - tim;
+        re[j] += tre;
+        im[j] += tim;
+      }
   return [re, im];
 }
 
@@ -127,11 +127,11 @@ function fft2d(re, im) {
   return [realrows, imaginaryrows];
 }
 
-function ifft1d(re, im){
+function ifft1d(re, im) {
   fft1d(im, re);
-  for(var i = 0, N = re.length; i < N; i++){
-      im[i] /= N;
-      re[i] /= N;
+  for (var i = 0, N = re.length; i < N; i++) {
+    im[i] /= N;
+    re[i] /= N;
   }
   return [re, im];
 }
@@ -173,7 +173,7 @@ function conv1d(re1, im1, re2, im2) {
   fft1d(re2, im2);
   var reconvfft = [];
   var imconvfft = [];
-  for(i = 0; i < re1.length; i++) {
+  for (i = 0; i < re1.length; i++) {
     reconvfft.push(re1[i] * re1[i]);
     imconvfft.push(im1[i] * im2[i]);
   }
@@ -202,28 +202,46 @@ function conv2d(re1, im1, re2, im2) {
   return ifft2d(reres, imres);
 }
 
-re = [1,2,3,4];
-im = [0,0,0,0];
+re = [1, 2, 3, 4];
+im = [0, 0, 0, 0];
 fft1d(re, im);
 console.log(re, im);
 ifft1d(re, im);
 console.log(re, im);
 
-re2d = [[1,2,6],[3,4,8]];
-im2d = [[0,0,0],[0,0,0]];
+re2d = [
+  [1, 2, 6],
+  [3, 4, 8]
+];
+im2d = [
+  [0, 0, 0],
+  [0, 0, 0]
+];
 var fft2dres = fft2d(re2d, im2d);
 console.log(fft2dres[0], fft2dres[1]);
 var ifft2dres = ifft2d(fft2dres[0], fft2dres[1]);
 console.log(ifft2dres[0], ifft2dres[1]);
 console.log("done");
 
-var re2 = [0,0,0,0,0];
-var im2 = [0,0,0,0,0];
+var re2 = [0, 0, 0, 0, 0];
+var im2 = [0, 0, 0, 0, 0];
 console.log(conv1d(re, im, re2, im2));
 console.log("done2");
 
-re12d = [[1,2],[3,4]];
-im12d = [[0,0],[0,0]];
-re2d2 = [[1,0],[0,0]];
-im2d2 = [[0,0],[0,0]];
+re12d = [
+  [1, 2],
+  [3, 4]
+];
+im12d = [
+  [0, 0],
+  [0, 0]
+];
+re2d2 = [
+  [1, 0],
+  [0, 0]
+]; // pad zeroes onto the filter before doing the fft stuff
+im2d2 = [
+  [0, 0],
+  [0, 0]
+];
 console.log(conv2d(re12d, im12d, re2d2, im2d2));
