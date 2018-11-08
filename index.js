@@ -18,7 +18,7 @@ const secureCompare = require('secure-compare');
 var secretKey = config.other.secretKey;
 var Jimp = require('jimp')
 
-var url = "https://firebasestorage.googleapis.com/v0/b/image-face-detection.appspot.com/o/images%2F4_Dancing_Dancing_4_33.jpg?alt=media&token=bf771f69-07f0-4e99-93df-a1243609c13e";
+var url = "https://cdn4.iconfinder.com/data/icons/small-n-flat/24/clock-128.png";
 
 function createGrayscale(url, outputname) {
   Jimp.read(url, (err, image) => {
@@ -26,7 +26,7 @@ function createGrayscale(url, outputname) {
     //console.log(image.bitmap.data)
     var xdim = image.bitmap.width;
     var ydim = image.bitmap.height;
-    var grayscaleconstants = config.other.imagegrayscaleconstants
+    var grayscaleconstants = config.other.imagegrayscaleconstants;
     //console.log(grayscaleconstants);
 
     for (var x = 0; x < xdim; x++) {
@@ -62,11 +62,14 @@ function createGrayscale(url, outputname) {
 
 function fft1d(re, im) {
   var N = re.length;
+  //console.log(re);
   for (var i = 0; i < N; i++) {
     for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
       j = (j << 1) | (h & 1);
     if (j > i) {
       re[j] = [re[i], re[i] = re[j]][0];
+      //console.log(i);
+      //console.log(j);
       im[j] = [im[i], im[i] = im[j]][0];
     }
   }
@@ -85,17 +88,27 @@ function fft1d(re, im) {
   return [re, im];
 }
 
-function fft2d(re, im) {
+function resizeToEven(re, im) {
   //make sure it's an even number of stuff per row and if not make it even
   //resize in the future to make it an even number ex Jimp .resize(256, 256)
   //comment out in the future
-  if (re[0].length % 2 !== 0) {
+  if (re[0].length % 2 !== 0)
     for (var i = 0; i < re.length; i++) {
       re[i].push(0);
       im[i].push(0);
     }
+  if (re.length % 2 !== 0) {
+    console.log("resize");
+    var thesize = re[0].length;
+    var emptyarray = Array.apply(null, Array(thesize)).map(Number.prototype.valueOf, 0);
+    re.push(emptyarray);
+    im.push(emptyarray);
   }
   // up to here
+}
+
+function fft2d(re, im) {
+  resizeToEven(re, im);
   var realcolumns = [];
   var imaginarycolumns = [];
   for (var i = 0; i < re.length; i++)
@@ -137,6 +150,7 @@ function ifft1d(re, im) {
 }
 
 function ifft2d(re, im) {
+  
   var realcolumns = [];
   var imaginarycolumns = [];
   for (var i = 0; i < re.length; i++)
@@ -181,12 +195,40 @@ function conv1d(re1, im1, re2, im2) {
   return [reconvfft, imconvfft];
 }
 
-function conv2d(re1, im1, re2, im2) {
+function conv2d(re1, filter) {
   // this is wrong need to redo it with 2d fft
   var reres = [];
   var imres = [];
+  console.log(re1[50][20]);
+  var emptyarrayrow = new Array(re1[0].length).fill(0);
+  var re2 = new Array(re1.length).fill(emptyarrayrow);
+  var im1 = re2.map(function(arr) {
+    return arr.slice();
+  });
+  var im2 = re2.map(function(arr) {
+    return arr.slice();
+  });
+  for (var i = 0; i < filter.length; i++)
+    for (var j = 0; j < filter[i].length; j++)
+      re2[i][j] = filter[i][j];
+  /*
+  console.log("get lengths");
+  console.log(re1.length);
+  console.log(re1[0].length);
+  console.log(im1.length);
+  console.log(im1[0].length);
+  console.log(re2.length);
+  console.log(re2[0].length);
+  console.log(im2.length);
+  console.log(im2[0].length);
+  console.log("end lengths");
+  */
   var fft1 = fft2d(re1, im1);
+  //console.log(fft1[0][50]);
   var fft2 = fft2d(re2, im2);
+  console.log(fft1[0][50][20]);
+  console.log(fft2[0][50][20]);
+  console.log(fft2[1][50][20]);
   for (var i = 0; i < fft1[0].length; i++) {
     var realrowconv = [];
     var imaginaryrowconv = [];
@@ -199,6 +241,8 @@ function conv2d(re1, im1, re2, im2) {
     reres.push(realrowconv);
     imres.push(imaginaryrowconv);
   }
+  console.log("test1")
+  console.log(imres[50]);
   return ifft2d(reres, imres);
 }
 
@@ -228,20 +272,63 @@ var im2 = [0, 0, 0, 0, 0];
 console.log(conv1d(re, im, re2, im2));
 console.log("done2");
 
-re12d = [
-  [1, 2],
-  [3, 4]
-];
-im12d = [
-  [0, 0],
-  [0, 0]
-];
-re2d2 = [
-  [1, 0],
-  [0, 0]
-]; // pad zeroes onto the filter before doing the fft stuff
-im2d2 = [
-  [0, 0],
-  [0, 0]
-];
-console.log(conv2d(re12d, im12d, re2d2, im2d2));
+Jimp.read(url, (err, image) => {
+  console.log("getting image");
+  //console.log(image.bitmap.data)
+  var xdim = image.bitmap.width;
+  var ydim = image.bitmap.height;
+  //console.log(grayscaleconstants);
+
+  var imager = [];
+  var imageg = [];
+  var imageb = [];
+
+  for (var x = 0; x < xdim; x++) {
+    var rowr = [];
+    var rowg = [];
+    var rowb = [];
+    for (var y = 0; y < ydim; y++) {
+      var pixelcolor = image.getPixelColor(x, y);
+      var rgba = Jimp.intToRGBA(pixelcolor);
+      rowr.push(rgba.r);
+      rowg.push(rgba.g);
+      rowb.push(rgba.b);
+    }
+    imager.push(rowr);
+    imageg.push(rowg);
+    imageb.push(rowb);
+  }
+  //var fft1 = fft2d(imager, im12d);
+  //var fft1 = fft2d([[0,0],[0,0]], [[0,0],[0,0]]);
+  
+  //console.log(imager[50]);
+  console.log("start tests");
+  console.log(imager.length);
+  console.log(imageg.length);
+  console.log(imageb.length);
+  console.log(imager[0].length);
+  console.log(imageg[0].length);
+  console.log(imageb[0].length);
+  console.log("end tests");
+
+  var filter = [[1]];
+
+  //console.log(imager);
+  var newr = conv2d(imager, filter);
+  //console.log(newr[0][30]);
+  
+  /*
+  var newg = conv2d(imageg, filter);
+  var newb = conv2d(imageb, filter);
+
+  for (var x = 0; x < xdim; x++) {
+    for (var y = 0; y < ydim; y++) {
+      var hexval = Jimp.rgbaToInt(newr[x][y], newg[x][y], newb[x][y], 255);
+      image.setPixelColor(hexval, x, y);
+    }
+  }
+
+  image.write("test.jpg");
+  */
+  console.log("finished.");
+});
