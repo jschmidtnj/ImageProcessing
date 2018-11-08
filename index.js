@@ -226,9 +226,9 @@ function conv2d(re1, filter) {
   var fft1 = fft2d(re1, im1);
   //console.log(fft1[0][50]);
   var fft2 = fft2d(re2, im2);
-  console.log(fft1[0][50][20]);
-  console.log(fft2[0][50][20]);
-  console.log(fft2[1][50][20]);
+  //console.log(fft1[0][50][20]);
+  //console.log(fft2[0][50][20]);
+  //console.log(fft2[1][50][20]);
   for (var i = 0; i < fft1[0].length; i++) {
     var realrowconv = [];
     var imaginaryrowconv = [];
@@ -246,13 +246,73 @@ function conv2d(re1, filter) {
   return ifft2d(reres, imres);
 }
 
-re = [1, 2, 3, 4];
-im = [0, 0, 0, 0];
-fft1d(re, im);
-console.log(re, im);
-ifft1d(re, im);
-console.log(re, im);
+function convImage(url, filter, outputname) {
+  Jimp.read(url, (err, image) => {
+    console.log("getting image");
+    //console.log(image.bitmap.data)
+    var xdim = image.bitmap.width;
+    var ydim = image.bitmap.height;
+    //console.log(grayscaleconstants);
+  
+    var imager = [];
+    var imageg = [];
+    var imageb = [];
+  
+    for (var x = 0; x < xdim; x++) {
+      var rowr = [];
+      var rowg = [];
+      var rowb = [];
+      for (var y = 0; y < ydim; y++) {
+        var pixelcolor = image.getPixelColor(x, y);
+        var rgba = Jimp.intToRGBA(pixelcolor);
+        rowr.push(rgba.r);
+        rowg.push(rgba.g);
+        rowb.push(rgba.b);
+      }
+      imager.push(rowr);
+      imageg.push(rowg);
+      imageb.push(rowb);
+    }
+    //var fft1 = fft2d(imager, im12d);
+    //var fft1 = fft2d([[0,0],[0,0]], [[0,0],[0,0]]);
+    
+    //console.log(imager[50]);
+    /*
+    console.log("start tests");
+    console.log(imager.length);
+    console.log(imageg.length);
+    console.log(imageb.length);
+    console.log(imager[0].length);
+    console.log(imageg[0].length);
+    console.log(imageb[0].length);
+    console.log("end tests");
+    */
+  
+    //console.log(imager);
+    var newr = conv2d(imager, filter);
+    //console.log(newr[0][30]);
+    var newg = conv2d(imageg, filter);
+    var newb = conv2d(imageb, filter);
+  
+    for (var x = 0; x < xdim; x++) {
+      for (var y = 0; y < ydim; y++) {
+        var hexval = Jimp.rgbaToInt(newr[x][y], newg[x][y], newb[x][y], 255);
+        image.setPixelColor(hexval, x, y);
+      }
+    }
+  
+    image.write(outputname + ".jpg");
+    console.log("finished.");
+  });
+}
 
+// re = [1, 2, 3, 4];
+// im = [0, 0, 0, 0];
+// fft1d(re, im);
+//console.log(re, im);
+// ifft1d(re, im);
+//console.log(re, im);
+/*
 re2d = [
   [1, 2, 6],
   [3, 4, 8]
@@ -261,74 +321,16 @@ im2d = [
   [0, 0, 0],
   [0, 0, 0]
 ];
-var fft2dres = fft2d(re2d, im2d);
-console.log(fft2dres[0], fft2dres[1]);
-var ifft2dres = ifft2d(fft2dres[0], fft2dres[1]);
-console.log(ifft2dres[0], ifft2dres[1]);
-console.log("done");
+*/
+// var fft2dres = fft2d(re2d, im2d);
+//console.log(fft2dres[0], fft2dres[1]);
+// var ifft2dres = ifft2d(fft2dres[0], fft2dres[1]);
+//console.log(ifft2dres[0], ifft2dres[1]);
 
-var re2 = [0, 0, 0, 0, 0];
-var im2 = [0, 0, 0, 0, 0];
-console.log(conv1d(re, im, re2, im2));
-console.log("done2");
+// var re2 = [0, 0, 0, 0, 0];
+// var im2 = [0, 0, 0, 0, 0];
+// console.log(conv1d(re, im, re2, im2));
 
-Jimp.read(url, (err, image) => {
-  console.log("getting image");
-  //console.log(image.bitmap.data)
-  var xdim = image.bitmap.width;
-  var ydim = image.bitmap.height;
-  //console.log(grayscaleconstants);
+//var filter = [[1]];
+//convImage(url, filter, "output");
 
-  var imager = [];
-  var imageg = [];
-  var imageb = [];
-
-  for (var x = 0; x < xdim; x++) {
-    var rowr = [];
-    var rowg = [];
-    var rowb = [];
-    for (var y = 0; y < ydim; y++) {
-      var pixelcolor = image.getPixelColor(x, y);
-      var rgba = Jimp.intToRGBA(pixelcolor);
-      rowr.push(rgba.r);
-      rowg.push(rgba.g);
-      rowb.push(rgba.b);
-    }
-    imager.push(rowr);
-    imageg.push(rowg);
-    imageb.push(rowb);
-  }
-  //var fft1 = fft2d(imager, im12d);
-  //var fft1 = fft2d([[0,0],[0,0]], [[0,0],[0,0]]);
-  
-  //console.log(imager[50]);
-  console.log("start tests");
-  console.log(imager.length);
-  console.log(imageg.length);
-  console.log(imageb.length);
-  console.log(imager[0].length);
-  console.log(imageg[0].length);
-  console.log(imageb[0].length);
-  console.log("end tests");
-
-  var filter = [[1]];
-
-  //console.log(imager);
-  var newr = conv2d(imager, filter);
-  //console.log(newr[0][30]);
-  
-  /*
-  var newg = conv2d(imageg, filter);
-  var newb = conv2d(imageb, filter);
-
-  for (var x = 0; x < xdim; x++) {
-    for (var y = 0; y < ydim; y++) {
-      var hexval = Jimp.rgbaToInt(newr[x][y], newg[x][y], newb[x][y], 255);
-      image.setPixelColor(hexval, x, y);
-    }
-  }
-
-  image.write("test.jpg");
-  */
-  console.log("finished.");
-});
