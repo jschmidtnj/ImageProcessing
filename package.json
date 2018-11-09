@@ -6,7 +6,8 @@
   "gypfile": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "deploy": "git subtree push --prefix frontend-app/dist/ origin gh-pages && cd frontend-app && firebase deploy && cd .."
   },
   "repository": {
     "type": "git",
