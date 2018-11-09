@@ -3,7 +3,6 @@
 * Usage: imageproc in_file_name out_file_name width height
  **********************************************************************************/
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,153 +13,167 @@ using namespace cimg_library;
 
 int main(int argc, char *argv[])
 {
-	FILE  *in, *out;
+	FILE *in, *out;
 	int filter[3][3];
-	int   j, k, width, height, x, y;
-	int ** image_in, ** image_out;
+	int j, k, width, height;
+	int **image_in, **image_out;
 	float sum1, sum2;
 	float new_T, old_T, delta_T;
 	long count1, count2;
+	int l, m;
+	float mask[3][3] = {
+		{1.0, 1.0, 1.0},
+		{1.0, 1.0, 1.0},
+		{1.0, 1.0, 1.0}};
 
-
-	if(argc<5) { printf("ERROR: Insufficient parameters!\n"); return(1);}
+	if (argc < 5)
+	{
+		printf("ERROR: Insufficient parameters!\n");
+		return (1);
+	}
 
 	width = atoi(argv[3]);
 	height = atoi(argv[4]);
 
-	image_in = (int**) calloc(height, sizeof(int*));
-	if(!image_in)
+	image_in = (int **)calloc(height, sizeof(int *));
+	if (!image_in)
 	{
 		printf("Error: Can't allocate memmory!\n");
-		return(1);
+		return (1);
 	}
 
-	image_out = (int**) calloc(height, sizeof(int*));
-	if(!image_out)
+	image_out = (int **)calloc(height, sizeof(int *));
+	if (!image_out)
 	{
 		printf("Error: Can't allocate memmory!\n");
-		return(1);
+		return (1);
 	}
 
-	for (j=0; j<height; j++)
+	for (j = 0; j < height; j++)
 	{
-		image_in[j] = (int *) calloc(width, sizeof(int));
-		if(!image_in[j])
+		image_in[j] = (int *)calloc(width, sizeof(int));
+		if (!image_in[j])
 		{
 			printf("Error: Can't allocate memmory!\n");
-			return(1);
+			return (1);
 		}
 
-		image_out[j] = (int *) calloc(width, sizeof(int));
-		if(!image_out[j])
+		image_out[j] = (int *)calloc(width, sizeof(int));
+		if (!image_out[j])
 		{
 			printf("Error: Can't allocate memmory!\n");
-			return(1);
+			return (1);
 		}
-
 	}
 
-	if((in=fopen(argv[1],"rb"))==NULL)
+	if ((in = fopen(argv[1], "rb")) == NULL)
 	{
 		printf("ERROR: Can't open in_file!\n");
-		return(1);
+		return (1);
 	}
 
-	if((out=fopen(argv[2],"wb"))==NULL)
+	if ((out = fopen(argv[2], "wb")) == NULL)
 	{
 		printf("ERROR: Can't open out_file!\n");
-		return(1);
+		return (1);
 	}
 
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	    	{
-			if((image_in[j][k]=getc(in))==EOF)
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			if ((image_in[j][k] = getc(in)) == EOF)
 			{
 				printf("ERROR: Can't read from in_file!\n");
-				return(1);
-		      }
-	    	}
-      if(fclose(in)==EOF)
+				return (1);
+			}
+		}
+	if (fclose(in) == EOF)
 	{
 		printf("ERROR: Can't close in_file!\n");
-		return(1);
+		return (1);
 	}
 
 	/* display image_in */
-	CImg<int> image_disp(width, height,1,1,0);
+	CImg<int> image_disp(width, height, 1, 1, 0);
 	/* CImg<type> image_name(width,height,temporal_frame_number,color_plane_number,initial_value) */
 
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	   	{
-			image_disp(k,j,0,0) = image_in[j][k];
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			image_disp(k, j, 0, 0) = image_in[j][k];
 		}
-	CImgDisplay disp_in(image_disp,"Image_In",0);
+	CImgDisplay disp_in(image_disp, "Image_In", 0);
 	/* CImgDisplay display_name(image_displayed, "window title", normalization_factor) */
 
-
-/********************************************************************/
-/* Image Processing begins                                          */
-/********************************************************************/
+	/********************************************************************/
+	/* Image Processing begins                                          */
+	/********************************************************************/
 	/*Create a negative of the image*/
-	/*
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	    	{
-			image_out[j][k]=255-image_in[j][k];
-		}
 
+	/*
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			image_out[j][k] = 255 - image_in[j][k];
+		}
 	*/
 
 	/*Add a filter*/
 
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-			for (y=0; y<3; y++)
-				for (x=0; x<3; x++)
-				{
-					image_out[j][k]=255-image_in[j][k];
-				}
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			if (j == 0 || j == height - 1 || k == 0 || k == width - 1)
+				image_out[j][k] = image_in[j][k];
+			sum1 = 0.0;
+			for (l = 0; l < 3; l++)
+				for (m = 0; m < 3; m++)
+					sum1 += ((float)image_in[j + l - 1][k + m - 1]) * mask[l][m] / 9;
+			if (sum1 > 255)
+				sum1 = 255;
+			if (sum1 < 0)
+				sum1 = 0;
+			image_out[j][k] = (int)sum1;
+		}
 
+	/*if you want to do high pass, make the boundary 0, else if low pass copy to new image unchanged*/
 
-/********************************************************************/
-/* Image Processing ends                                          */
-/********************************************************************/
+	/********************************************************************/
+	/* Image Processing ends                                          */
+	/********************************************************************/
 
 	/* display image_out */
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	   	{
-			image_disp(k,j,0,0) = image_out[j][k];
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			image_disp(k, j, 0, 0) = image_out[j][k];
 		}
-	CImgDisplay disp_out(image_disp,"Image_Out",0);
-
+	CImgDisplay disp_out(image_disp, "Image_Out", 0);
 
 	/* save image_out into out_file in RAW format */
-	for (j=0; j<height; j++)
-		for (k=0; k<width; k++)
-	    {
-	            if((putc(image_out[j][k],out))==EOF)
-	            {
-		        	printf("ERROR: Can't write to out_file!\n");
-				    return(1);
-	            }
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+		{
+			if ((putc(image_out[j][k], out)) == EOF)
+			{
+				printf("ERROR: Can't write to out_file!\n");
+				return (1);
+			}
 		}
 
-    if(fclose(out)==EOF)
+	if (fclose(out) == EOF)
 	{
 		printf("ERROR: Can't close out_file!\n");
-		return(1);
+		return (1);
 	}
 
 	/* closing */
-	while (!disp_in.is_closed)
+	while (!disp_in.is_closed())
 		disp_in.wait();
-	while (!disp_out.is_closed)
+	while (!disp_out.is_closed())
 		disp_out.wait();
 
-	for (j=0; j<height; j++)
+	for (j = 0; j < height; j++)
 	{
 		free(image_in[j]);
 		free(image_out[j]);
@@ -168,8 +181,5 @@ int main(int argc, char *argv[])
 	free(image_in);
 	free(image_out);
 
-    return 0;
+	return 0;
 }
-
-
-
