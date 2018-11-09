@@ -12,3 +12,6 @@ https://towardsdatascience.com/face-detection-for-beginners-e58e8f21aad9
 
 https://firebase.google.com/docs/storage/extend-with-functions
 
+## github pages update from master
+
+`git subtree push --prefix frontend-app/dist/ origin gh-pages`
