@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
 	long count1, count2;
 	int l, m;
 	float mask[3][3] = {
-		{1.0, 1.0, 1.0},
-		{1.0, 1.0, 1.0},
-		{1.0, 1.0, 1.0}};
+		{0.0, 1.0, -1.0},
+		{1.0, 1.0, 0.0},
+		{0.0, 1.0, 2.0}};
 
 	if (argc < 5)
 	{
@@ -125,15 +125,18 @@ int main(int argc, char *argv[])
 		{
 			if (j == 0 || j == height - 1 || k == 0 || k == width - 1)
 				image_out[j][k] = image_in[j][k];
-			sum1 = 0.0;
-			for (l = 0; l < 3; l++)
-				for (m = 0; m < 3; m++)
-					sum1 += ((float)image_in[j + l - 1][k + m - 1]) * mask[l][m] / 9;
-			if (sum1 > 255)
-				sum1 = 255;
-			if (sum1 < 0)
-				sum1 = 0;
-			image_out[j][k] = (int)sum1;
+			else
+			{
+				sum1 = 0.0;
+				for (l = 0; l < 3; l++)
+					for (m = 0; m < 3; m++)
+						sum1 += ((float)image_in[j + l - 1][k + m - 1]) * mask[l][m];
+				if (sum1 > 255)
+					sum1 = 255;
+				if (sum1 < 0)
+					sum1 = 0;
+				image_out[j][k] = (int)sum1;
+			}
 		}
 
 	/*if you want to do high pass, make the boundary 0, else if low pass copy to new image unchanged*/

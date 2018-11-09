@@ -144,6 +144,7 @@ $(document).ready(function () {
             createFilterSelect();
             //console.log("creating histogram select");
             createHistogramSelect();
+            filterImage([[1]]);
         }).catch(function (err) {
             //console.log('Error: ', err);
         });
@@ -180,6 +181,54 @@ $(document).ready(function () {
                     $('#nofilterwarning').addClass("collapse");
                     //console.log("making it grayscale");
                     convertToGrayscale();
+                    updateImageSrc();
+                    break;
+                case "smoothing3x3":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.smoothing3x3);
+                    updateImageSrc();
+                    break;
+                case "laplacian":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    compositeLaplacian(config.filters.laplacian);
+                    updateImageSrc();
+                    break;
+                case "compositelaplacian":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.composite);
+                    updateImageSrc();
+                    break;
+                case "pointdetect":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.pointdetect);
+                    updateImageSrc();
+                    break;
+                case "horizontallinedetect":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.horizontallinedetect);
+                    updateImageSrc();
+                    break;
+                case "verticallinedetect":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.verticallinedetect);
+                    updateImageSrc();
+                    break;
+                case "linedetect45":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.linedetect45);
+                    updateImageSrc();
+                    break;
+                case "linedetect325":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it grayscale");
+                    filterImage(config.filters.linedetect325);
                     updateImageSrc();
                     break;
             }
@@ -368,7 +417,7 @@ $(document).ready(function () {
     }
 
     function convertToGrayscale() {
-        var grayscaleconstants = config.other.imagegrayscaleconstants;
+        var grayscaleconstants = config.filters.imagegrayscaleconstants;
         //console.log(grayscaleconstants);
 
         for (var x = 0; x < window.width; x++) {
@@ -390,51 +439,56 @@ $(document).ready(function () {
         //console.log("finished");
     }
 
-    function fft(re, im) {
-        var N = re.length;
-        for (var i = 0; i < N; i++) {
-            for (var j = 0, h = i, k = N; k >>= 1; h >>= 1)
-                j = (j << 1) | (h & 1);
-            if (j > i) {
-                re[j] = [re[i], re[i] = re[j]][0]
-                im[j] = [im[i], im[i] = im[j]][0]
-            }
-        }
-        for (var hN = 1; hN * 2 <= N; hN *= 2)
-            for (var i = 0; i < N; i += hN * 2)
-                for (var j = i; j < i + hN; j++) {
-                    var cos = Math.cos(Math.PI * (j - i) / hN),
-                        sin = Math.sin(Math.PI * (j - i) / hN)
-                    var tre = re[j + hN] * cos + im[j + hN] * sin,
-                        tim = -re[j + hN] * sin + im[j + hN] * cos;
-                    re[j + hN] = re[j] - tre;
-                    im[j + hN] = im[j] - tim;
-                    re[j] += tre;
-                    im[j] += tim;
+    function filterImage(filter) {
+
+        // filter for red, green and blue
+
+        for (var x = 0; x < window.width; x++)
+            for (var y = 0; y < window.height; y++)
+                if (!(x == 0 || x == width - 1 || y == 0 || y == height - 1)) {
+                    var sums = [0, 0, 0];
+                    for (var i = 0; i < filter.length; i++)
+                        for (var j = 0; j < filter[i].length; j++) {
+                            var pixelcolor = window.image.getPixelColor(x + i - 1, y + j - 1);
+                            var rgba = Jimp.intToRGBA(pixelcolor);
+                            sums[0] += rgba.r * filter[i][j];
+                            sums[1] += rgba.g * filter[i][j];
+                            sums[2] += rgba.b * filter[i][j];
+                        }
+                    for (i = 0; i < sums.length; i++) {
+                        if (sums[i] > 255)
+                            sums[i] = 255;
+                        if (sums[i] < 0)
+                            sums[i] = 0;
+                    }
+                    var hexval = Jimp.rgbaToInt(sums[0], sums[1], sums[2], 255);
+                    window.image.setPixelColor(hexval, x, y);
                 }
-        return [re, im];
+        //console.log("finished.");
     }
 
-    function convolution() {
-        // first do fft, then do convolution, then do inverse
-        // 5 6
-        // 3 4
-        // 1 2
-        // see https://antimatter15.com/2015/05/cooley-tukey-fft-dct-idct-in-under-1k-of-javascript/
-        // also see https://www.nayuki.io/res/fast-discrete-cosine-transform-algorithms/
-        // and https://www.nayuki.io/res/how-to-implement-the-discrete-fourier-transform/
-        // and http://fourier.eng.hmc.edu/e161/lectures/dct/node2.html
-        var result = [];
-        var filter = [
-            [1, 2],
-            [3, 4],
-            [5, 6]
-        ];
-        for (var y = 0; y < window.height + filter.length; y++) {
-            for (var x = 0; x < window.width + filter[0].length; x++) {
-
+    function compositeLaplacian(filter) {
+        var original = window.image.clone();
+        filterImage(filter);
+        for (var x = 0; x < window.width; x++)
+            for (var y = 0; y < window.height; y++) {
+                var originalpixelcolor = original.getPixelColor(x, y);
+                var rgbaorig = Jimp.intToRGBA(originalpixelcolor);
+                var transformedpixelcolor = window.image.getPixelColor(x, y);
+                var rgbatrans = Jimp.intToRGBA(transformedpixelcolor);
+                var sums = [0, 0, 0];
+                sums[0] = rgbatrans.r + rgbaorig.r;
+                sums[1] = rgbatrans.g + rgbaorig.g;
+                sums[2] = rgbatrans.b + rgbaorig.b;
+                for (var i = 0; i < sums.length; i++) {
+                    if (sums[i] > 255)
+                        sums[i] = 255;
+                    else if (sums[i] < 0)
+                        sums[i] = 0;
+                }
+                var hexval = Jimp.rgbaToInt(sums[0], sums[1], sums[2], 255);
+                window.image.setPixelColor(hexval, x, y);
             }
-        }
     }
 
     function createJimpFile(file) {

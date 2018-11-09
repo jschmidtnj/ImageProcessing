@@ -334,3 +334,46 @@ im2d = [
 //var filter = [[1]];
 //convImage(url, filter, "output");
 
+function filterImage(url, filter, outputname) {
+  Jimp.read(url, (err, image) => {
+    console.log("getting image");
+    //console.log(image.bitmap.data);
+    var width = image.bitmap.width;
+    var height = image.bitmap.height;
+
+    // filter for red, green and blue
+  
+    for (var x = 0; x < width; x++)
+      for (var y = 0; y < height; y++)
+        if (!(x == 0 || x == width - 1 || y == 0 || y == height - 1)) {
+          var sums = [0, 0, 0];
+          for (var i = 0; i < filter.length; i++)
+            for (var j = 0; j < filter[i].length; j++) {
+              var pixelcolor = image.getPixelColor(x + i - 1, y + j - 1);
+              var rgba = Jimp.intToRGBA(pixelcolor);
+              sums[0] += rgba.r * filter[i][j];
+              sums[1] += rgba.g * filter[i][j];
+              sums[2] += rgba.b * filter[i][j];
+            }
+          for (var i = 0; i < sums.length; i++) {
+            if (sums[i] > 255)
+              sums[i] = 255;
+            if (sums[i] < 0)
+              sums[i] = 0;
+          }
+          var hexval = Jimp.rgbaToInt(sums[0], sums[1], sums[2], 255);
+          image.setPixelColor(hexval, x, y);
+        }
+  
+    image.write(outputname + ".jpg");
+    console.log("finished.");
+  });
+}
+
+var filter = [
+  [0.0, 0.0, 0.0],
+  [0.0, 1.0, 0.0],
+  [0.0, 0.0, 1.0]
+];
+
+filterImage("https://www.w3schools.com/w3css/img_lights.jpg", filter, "output");
