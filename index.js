@@ -376,4 +376,4 @@ var filter = [
   [0.0, 0.0, 1.0]
 ];
 
-filterImage("https://www.w3schools.com/w3css/img_lights.jpg", filter, "output");
+filterImage("https://www.w3schools.com/w3css/img_lights.jpg", filter, "generated/output");
