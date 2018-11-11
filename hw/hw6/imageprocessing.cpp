@@ -22,9 +22,9 @@ int main(int argc, char *argv[])
 	long count1, count2;
 	int l, m;
 	float mask[3][3] = {
-		{0.0, 1.0, -1.0},
-		{1.0, 1.0, 0.0},
-		{0.0, 1.0, 2.0}};
+		{0.111111, 0.111111, 0.111111},
+		{0.111111, 0.111111, 0.111111},
+		{0.111111, 0.111111, 0.111111}};
 
 	if (argc < 5)
 	{
@@ -110,13 +110,11 @@ int main(int argc, char *argv[])
 	/********************************************************************/
 	/*Create a negative of the image*/
 
-	/*
 	for (j = 0; j < height; j++)
 		for (k = 0; k < width; k++)
 		{
 			image_out[j][k] = 255 - image_in[j][k];
 		}
-	*/
 
 	/*Add a filter*/
 
@@ -140,6 +138,53 @@ int main(int argc, char *argv[])
 		}
 
 	/*if you want to do high pass, make the boundary 0, else if low pass copy to new image unchanged*/
+
+	// Add Histogram equalization
+
+	float histogram[256];		 // histogram counter
+	float equalization_map[256]; // equalization mapping
+	float one_pixel = 1.0 / ((float)width * height);
+	int num_pixel_vals = 256;
+	float max_pixel_val_float = 255.0;
+	int max_pixel_val_int = 255;
+
+	for (j = 0; j < num_pixel_vals; j++)
+		histogram[j] = 0.0;
+
+	for (j = 0; j < num_pixel_vals; j++)
+		equalization_map[j] = 0.0;
+
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+			histogram[image_in[j][k]] += one_pixel;
+
+	for (j = 0; j < num_pixel_vals; j++)
+	{
+		for (k = 0; k < j + 1; k++)
+			equalization_map[j] += histogram[k];
+		equalization_map[j] = floor(equalization_map[j] * max_pixel_val_float);
+	}
+
+	for (j = 0; j < height; j++)
+		for (k = 0; k < width; k++)
+			image_out[j][k] = (int)equalization_map[image_in[j][k]];
+
+	CImg<float> plot(num_pixel_vals, num_pixel_vals, 1, 1, max_pixel_val_int), vec_data(num_pixel_vals, 1, 1, 1, 0);
+	const unsigned char black[] = {0};
+
+	for (j = 0; j < num_pixel_vals; j++)
+		vec_data(j, 0, 0, 0) = histogram[j];
+
+	plot.draw_graph(vec_data, black, 1, 1, 0, 0, 0);
+
+	CImgDisplay disp_hist(plot, "Histogram", 0);
+
+	for (j = 0; j < num_pixel_vals; j++)
+		vec_data(j, 0, 0, 0) = equalization_map[j];
+
+	plot.fill(max_pixel_val_int).draw_graph(vec_data, black, 1, 1, 0, 0, 0);
+
+	CImgDisplay disp_eqmap(plot, "Equalization Mapping Function", 0);
 
 	/********************************************************************/
 	/* Image Processing ends                                          */
