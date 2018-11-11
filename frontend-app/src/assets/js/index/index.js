@@ -183,51 +183,57 @@ $(document).ready(function () {
                     convertToGrayscale();
                     updateImageSrc();
                     break;
+                case "negative":
+                    $('#nofilterwarning').addClass("collapse");
+                    //console.log("making it negative");
+                    convertToNegative();
+                    updateImageSrc();
+                    break;
                 case "smoothing3x3":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it smooth");
                     filterImage(config.filters.smoothing3x3);
                     updateImageSrc();
                     break;
                 case "laplacian":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it laplacian");
                     compositeLaplacian(config.filters.laplacian);
                     updateImageSrc();
                     break;
                 case "compositelaplacian":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it composite laplacian");
                     filterImage(config.filters.composite);
                     updateImageSrc();
                     break;
                 case "pointdetect":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it point detect");
                     filterImage(config.filters.pointdetect);
                     updateImageSrc();
                     break;
                 case "horizontallinedetect":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it horizontal line detect");
                     filterImage(config.filters.horizontallinedetect);
                     updateImageSrc();
                     break;
                 case "verticallinedetect":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it vertical line detect");
                     filterImage(config.filters.verticallinedetect);
                     updateImageSrc();
                     break;
                 case "linedetect45":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it line detect 45");
                     filterImage(config.filters.linedetect45);
                     updateImageSrc();
                     break;
                 case "linedetect325":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it grayscale");
+                    //console.log("making it line detect -45");
                     filterImage(config.filters.linedetect325);
                     updateImageSrc();
                     break;
@@ -416,6 +422,21 @@ $(document).ready(function () {
         myChart.setOption(option);
     }
 
+    function convertToNegative() {
+        for (var x = 0; x < window.width; x++) {
+            for (var y = 0; y < window.height; y++) {
+                var pixelcolor = window.image.getPixelColor(x, y);
+                var rgba = Jimp.intToRGBA(pixelcolor);
+                var newred = 255 - rgba.r;
+                var newgreen = 255 - rgba.g;
+                var newblue = 255 - rgba.b;
+                var hexval = Jimp.rgbaToInt(newred, newgreen, newblue, 255);
+                window.image.setPixelColor(hexval, x, y);
+            }
+        }
+        //console.log("finished");
+    }
+
     function convertToGrayscale() {
         var grayscaleconstants = config.filters.imagegrayscaleconstants;
         //console.log(grayscaleconstants);
@@ -437,6 +458,36 @@ $(document).ready(function () {
             }
         }
         //console.log("finished");
+    }
+
+    function histogramequalization() {
+        // work on this more to get the actual rgba values...
+        var histogram = new Array(256);		 // histogram counter
+        var equalization_map = new Array(256);; // equalization mapping
+        var one_pixel = 1.0 / (width * height);
+        var num_pixel_vals = 256;
+        var max_pixel_val = 255.0;
+
+        for (j = 0; j < num_pixel_vals; j++)
+            histogram[j] = 0.0;
+
+        for (j = 0; j < num_pixel_vals; j++)
+            equalization_map[j] = 0.0;
+
+        for (j = 0; j < height; j++)
+            for (k = 0; k < width; k++)
+                histogram[image_in[j][k]] += one_pixel;
+
+        for (j = 0; j < num_pixel_vals; j++)
+        {
+            for (k = 0; k < j + 1; k++)
+                equalization_map[j] += histogram[k];
+            equalization_map[j] = floor(equalization_map[j] * max_pixel_val);
+        }
+
+        for (j = 0; j < height; j++)
+            for (k = 0; k < width; k++)
+                image_out[j][k] = equalization_map[image_in[j][k]];
     }
 
     function filterImage(filter) {
