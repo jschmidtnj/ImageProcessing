@@ -144,7 +144,9 @@ $(document).ready(function () {
             createFilterSelect();
             //console.log("creating histogram select");
             createHistogramSelect();
-            filterImage([[1]]);
+            filterImage([
+                [1]
+            ]);
         }).catch(function (err) {
             //console.log('Error: ', err);
         });
@@ -185,8 +187,14 @@ $(document).ready(function () {
                     break;
                 case "negative":
                     $('#nofilterwarning').addClass("collapse");
-                    //console.log("making it negative");
+                    console.log("making it negative");
                     convertToNegative();
+                    updateImageSrc();
+                    break;
+                case "histogramequalization":
+                    $('#nofilterwarning').addClass("collapse");
+                    console.log("making it histogram equalized");
+                    histogramequalization();
                     updateImageSrc();
                     break;
                 case "smoothing3x3":
@@ -434,7 +442,7 @@ $(document).ready(function () {
                 window.image.setPixelColor(hexval, x, y);
             }
         }
-        //console.log("finished");
+        console.log("finished");
     }
 
     function convertToGrayscale() {
@@ -462,32 +470,60 @@ $(document).ready(function () {
 
     function histogramequalization() {
         // work on this more to get the actual rgba values...
-        var histogram = new Array(256);		 // histogram counter
-        var equalization_map = new Array(256);; // equalization mapping
-        var one_pixel = 1.0 / (width * height);
         var num_pixel_vals = 256;
-        var max_pixel_val = 255.0;
+        var histogram_red = new Array(num_pixel_vals); // histogram counter
+        var histogram_green = new Array(num_pixel_vals);
+        var histogram_blue = new Array(num_pixel_vals);
+        var equalization_map_red = new Array(num_pixel_vals); // equalization mapping
+        var equalization_map_green = new Array(num_pixel_vals);
+        var equalization_map_blue = new Array(num_pixel_vals);
+        var one_pixel = 1.0 / (window.width * window.height);
+        // console.log(one_pixel);
+        var max_pixel_val = 255;
 
-        for (j = 0; j < num_pixel_vals; j++)
-            histogram[j] = 0.0;
-
-        for (j = 0; j < num_pixel_vals; j++)
-            equalization_map[j] = 0.0;
-
-        for (j = 0; j < height; j++)
-            for (k = 0; k < width; k++)
-                histogram[image_in[j][k]] += one_pixel;
-
-        for (j = 0; j < num_pixel_vals; j++)
-        {
-            for (k = 0; k < j + 1; k++)
-                equalization_map[j] += histogram[k];
-            equalization_map[j] = floor(equalization_map[j] * max_pixel_val);
+        for (var i = 0; i < num_pixel_vals; i++) {
+            histogram_red[i] = 0.0;
+            histogram_green[i] = 0.0;
+            histogram_blue[i] = 0.0;
+            equalization_map_red[i] = 0.0;
+            equalization_map_green[i] = 0.0;
+            equalization_map_blue[i] = 0.0;
         }
 
-        for (j = 0; j < height; j++)
-            for (k = 0; k < width; k++)
-                image_out[j][k] = equalization_map[image_in[j][k]];
+        // console.log(histogram_red);
+
+        for (var x = 0; x < window.width; x++)
+            for (var y = 0; y < window.height; y++) {
+                var pixelcolor = window.image.getPixelColor(x, y);
+                var rgba = Jimp.intToRGBA(pixelcolor);
+                histogram_red[rgba.r] += one_pixel;
+                histogram_green[rgba.g] += one_pixel;
+                histogram_blue[rgba.b] += one_pixel;
+            }
+
+        // console.log(histogram_red);
+
+        for (var i = 0; i < num_pixel_vals; i++) {
+            for (var j = 0; j < i + 1; j++) {
+                equalization_map_red[i] += histogram_red[j];
+                equalization_map_green[i] += histogram_green[j];
+                equalization_map_blue[i] += histogram_blue[j];
+            }
+            equalization_map_red[i] = Math.floor(equalization_map_red[i] * max_pixel_val);
+            equalization_map_green[i] = Math.floor(equalization_map_green[i] * max_pixel_val);
+            equalization_map_blue[i] = Math.floor(equalization_map_blue[i] * max_pixel_val);
+        }
+
+        // console.log(histogram_red);
+        // console.log(equalization_map_red);
+
+        for (var x = 0; x < window.width; x++)
+            for (var y = 0; y < window.height; y++) {
+                var pixelcolor = window.image.getPixelColor(x, y);
+                var rgba = Jimp.intToRGBA(pixelcolor);
+                var hexval = Jimp.rgbaToInt(equalization_map_red[rgba.r], equalization_map_green[rgba.g], equalization_map_blue[rgba.b], 255);
+                window.image.setPixelColor(hexval, x, y);
+            }
     }
 
     function filterImage(filter) {
