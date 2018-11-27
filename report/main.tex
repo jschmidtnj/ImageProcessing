@@ -1,0 +1,175 @@
+\documentclass{article}
+  \usepackage[utf8]{inputenc}
+  \usepackage[american]{babel}
+  \usepackage{csquotes}
+  \usepackage{hyperref}
+  \usepackage[backend=biber,style=numeric,hyperref=true,natbib=true,autocite=plain,sorting=none]{biblatex}
+  \usepackage[margin=1in]{geometry}
+  \usepackage{fixltx2e}
+  
+  % this package and the below text is to force images to be added to the given section and subsection. See https://tex.stackexchange.com/questions/279/how-do-i-ensure-that-figures-appear-in-the-section-theyre-associated-with/235312#235312 for more information
+  \usepackage{placeins}
+  \let\Oldsection\section
+  \renewcommand{\section}{\FloatBarrier\Oldsection}
+  
+  \let\Oldsubsection\subsection
+  \renewcommand{\subsection}{\FloatBarrier\Oldsubsection}
+  
+  \let\Oldsubsubsection\subsubsection
+  \renewcommand{\subsubsection}{\FloatBarrier\Oldsubsubsection}
+  
+  \addbibresource{references.bib}
+  
+  \title{%
+    Image Processing Report: Web Image Filtering \\
+    \large Stevens Institute of Technology}
+  
+  \date{November 2018}
+  \author{Joshua Schmidt, Chris}
+  
+  \usepackage{graphicx}
+  
+  \begin{document}
+  
+  \maketitle
+  
+  \bigskip
+  \bigskip
+  \bigskip
+  \bigskip
+  
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/logo.png}
+    \label{fig:logo}
+  \end{figure}
+  
+  \newpage
+  
+  \tableofcontents
+  
+  \newpage
+  
+  % References to all attachments in the main body of the report
+  
+  \section{Abstract}
+  
+  The goal of this project was to create a two-dimensional structure that can has the highest support-force to material-length ratio. The minimum load that the structure needed to support was 325 lbf, with a maximum copper tubing material length of 70 cm. The final load to length ratio was [FILL], with a maximum supported load of [FILL] lbf and a length of [FILL] cm. Therefore, this project was successful in meeting and surpassing the original specified requirements.
+  
+  \newpage
+  
+  \section{Introduction}
+  
+  \subsection{Project objectives}
+  
+  The main objective of this project was to design a planar truss that could support a given load over a given distance.
+  
+  Project objectives (i.e. design, build, final truss selection: e.g highest load to failure; lowest material; best strength to weight; etc.)
+  
+  \subsection{Project Specifications}
+  
+  \subsubsection{Requirements}
+  
+  The truss had to support a minimum of 325 lb, and a maximum of 500 lb. It had to be no more than 4" in height, and had to span a 15" gap. It could not exceed 2" below the horizontal span. In addition, the truss had to rest flat on two 1/2" wide supports in the truss buster. The joints at the supports, and the joint where the load would be applied, all had to be double gusseted. The joint that would bear the load also had to be at the top of the truss. The truss had to be no thicker than 0.175" at any given point, otherwise it would not fit in the truss buster. 
+  
+  \subsubsection{Materials}
+  \begin{itemize}
+  \item Full Scale Paper Template
+  \item (2)x 36" Long, 1/8" Square Brass Tubing
+  \item (1)x 12" Long, 0.016" x 1" Brass Strip
+  \item Butane Torch
+  \item Flux Paste
+  \item Flux Brush
+  \item Refractory Bricks
+  \item Fume Extractor
+  \item Bandsaw/Hacksaw
+  \item Sander/Sandpaper
+  \item Lead-Free Solder
+  \item Heat Resistant Mat
+  \item Safety Goggles
+  \item Gloves
+  \item Hand Shear
+  \end{itemize}
+  
+  \subsection{Approach}
+  
+  Approach to project planning, scheduling, and completion.
+  
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/logo.png}
+    \caption{scheduling chart}
+    \label{fig:spacesuitdisplay}
+  \end{figure}
+  
+  \newpage
+  
+  \section{Discussion}
+  
+  Introductory paragraph to Design Section content
+  
+  \subsection{Design}
+  
+  \subsubsection{Overview}
+  
+  The team began designing their truss by experimenting in the Truss Analyzer application on the VLE. After some introduction to trusses in class, they played around with different designs to figure out what worked and what did not. They went through a few different  After much discussion and collaboration, they decided on their final design.
+  Overview of the design process
+  
+  \subsubsection{Choice and Reasoning}
+  
+  Truss design with alternatives considered in insight into your design decisions
+  
+  \subsubsection{Design Analysis summary}
+  
+  Design analysis summary as developed from Truss Analyzer with interpretation of data
+  
+  \subsubsection{Fabrication}
+  
+  Fabrication concerns and considerations in the design phase
+  
+  \newpage
+  
+  \section{Conclusion and Recommendations}
+  
+  \subsection{Accomplishments}
+  
+  Describes the work in terms of accomplishments, both successful and unsuccessful
+  
+  \subsection{Recommendations}
+  
+  Provides recommendations to improve the project in terms of basic knowledge, materials, equipment, or other guidance
+  
+  Discuss what you would have done differently given the opportunity
+  
+  \newpage
+  
+  \section{Attachments}
+  
+  \subsection{Work Chart}
+  
+  Work break down structure and organization chart with roles and responsibilities
+  
+  \newpage
+  
+  \subsection{Truss Analysis}
+  
+  Truss Analysis jpg and csv printouts for final truss design
+  
+  \newpage
+  
+  \subsection{Alternatives Truss Analysis}
+  
+  Truss Analysis jpg and csv printouts for at least two alternate designs considered
+  
+  \newpage
+  
+  \subsection{Data}
+  
+  Brass compression data, charts, and formulas
+  
+  \newpage
+  
+  \printbibliography
+  
+  \end{document}
+  
