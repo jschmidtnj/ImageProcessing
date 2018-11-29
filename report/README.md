@@ -1,5 +1,5 @@
-# design3report
-Latex report for design 3
+# image processing report
+Latex report for image processing
 
 Made with Latex :).
 

@@ -125,6 +125,7 @@ $(document).ready(function () {
                         handleError(error);
                     });
                 }).catch(function (error) {
+                    console.log(error);
                     user.delete().then(function () {
                         firebase.auth().signOut().then(function () {
                             //console.log('Signed Out');

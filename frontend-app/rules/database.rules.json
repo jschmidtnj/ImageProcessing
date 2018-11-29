@@ -3,6 +3,14 @@
     "images": {
       ".write": "true",
       ".read": "true"
+    },
+    "users": {
+      "$uid": {
+        ".write": "auth != null",
+        ".read": "auth != null && auth.token.email_verified == true"
+      },
+      ".indexOn": ["email"],
+      ".read": "auth != null && auth.token.email_verified == true"
     }
   }
 }
