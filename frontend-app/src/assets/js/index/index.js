@@ -530,6 +530,8 @@ $(document).ready(function () {
 
         // filter for red, green and blue
 
+        var newimage = window.image.clone();
+
         for (var x = 0; x < window.width; x++)
             for (var y = 0; y < window.height; y++)
                 if (!(x == 0 || x == width - 1 || y == 0 || y == height - 1)) {
@@ -549,8 +551,9 @@ $(document).ready(function () {
                             sums[i] = 0;
                     }
                     var hexval = Jimp.rgbaToInt(sums[0], sums[1], sums[2], 255);
-                    window.image.setPixelColor(hexval, x, y);
+                    newimage.setPixelColor(hexval, x, y);
                 }
+        window.image = newimage;
         //console.log("finished.");
     }
 
