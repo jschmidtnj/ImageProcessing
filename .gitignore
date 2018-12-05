@@ -114,5 +114,5 @@ config.js
 
 # image files
 *.jpg
-*.png
+#*.png
 generated/
