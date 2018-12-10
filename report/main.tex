@@ -25,7 +25,7 @@
     \large Stevens Institute of Technology}
 
   \date{December 11, 2018}
-  \author{Joshua Schmidt, Chris Blackwood}
+  \author{By Joshua Schmidt and Chris Blackwood}
 
   \usepackage{graphicx}
 
@@ -62,7 +62,7 @@
 
   \subsection{Project objectives}
 
-  The main objective of this project was to dreate a web application for the digital editing of photos in real-time.
+  The main objective of this project was to create a web application for the digital editing of photos in real-time.
 
   Key Project objectives included building an application utilizing industry-standard tools including JavaScript, jQuery, and Node.js. This project served as an ample opportunity to learn more about the best practices of web development, as well as using Git as a document management system. In order to maintain the large number of JavaScript files used for this project, the JavaScript management tool called Webpack was used to manage the files automatically.
 
@@ -70,26 +70,12 @@
 
   \subsubsection{Requirements}
 
-  The truss had to support a minimum of 325 lb, and a maximum of 500 lb. It had to be no more than 4" in height, and had to span a 15" gap. It could not exceed 2" below the horizontal span. In addition, the truss had to rest flat on two 1/2" wide supports in the truss buster. The joints at the supports, and the joint where the load would be applied, all had to be double gusseted. The joint that would bear the load also had to be at the top of the truss. The truss had to be no thicker than 0.175" at any given point, otherwise it would not fit in the truss buster.
+  Minimum success criteria for this project included building an image processing tool capable of creating grayscale images, performing histogram equalization, creating negatives, and rudimentary line detection. No numerical success criteria were defined for this project; if this web application were been deployed in a commerical manner, it would be entirely necessary to define numerical criteria for image quality. However, being that mathemically deriving success criteria would likely take a disproportionate amount of time, it was decided that such a quality control process would be out of the scope of this project.
+  
+  As optional goals, a web application was to be created which could be hosted externally and accessed from anywhere within the world. Requirements for this application where that it needed to have adequate response time, loading in no more than 5 seconds (as user retention drops as page load times increase). Being a browser based application, this method of implementation allows for operating system cross compatibility, as users can upload images from smartphones, tablets, and desktop machines running any operating system of their choice.
+  
+  The second optional goal for this project was the addition of face detection algorithms to detect the presence of a face within an image based on rudimentary features using the WHAT ALGORITHM???. As machine learning is becoming a very commonly used technique in computer science, we may first think of solving this problem using machine learning to identify a face. However, using machine learning may introduce unnecesarry bugs into the system which are elusive to track down, thus reducing the reliability of the algorithm. Better practice in this case is to use the method that has the least opportunity for error, which would be feature detection. By programming in the particular features of interest, the programmer can have strict control over extraneous errors that would otherwise be introduced with a fast-and-loose method such as machine learning. However, due to time constraints as well as the additional complexity involved in the implementation of this algorithm, this part of the project was not completed.
 
-  \subsubsection{Materials}
-  \begin{itemize}
-  \item Full Scale Paper Template
-  \item (2)x 36" Long, 1/8" Square Brass Tubing
-  \item (1)x 12" Long, 0.016" x 1" Brass Strip
-  \item Butane Torch
-  \item Flux Paste
-  \item Flux Brush
-  \item Refractory Bricks
-  \item Fume Extractor
-  \item Bandsaw/Hacksaw
-  \item Sander/Sandpaper
-  \item Lead-Free Solder
-  \item Heat Resistant Mat
-  \item Safety Goggles
-  \item Gloves
-  \item Hand Shear
-  \end{itemize}
 
   \subsection{Approach}
 
@@ -106,18 +92,18 @@
 
   \section{Discussion}
 
-  Introductory paragraph to Design Section content
+  Once the project objectives were laid out, it was time to go about deciding on the implementation of the image filtering algorithms. It was known that the filters themselves would be fairly simple in design, as Laplacian operators, sharpening, smooth filters, and line detectors are fairly simple designs. Much of the thought spent on the design process involved the implementation of image processing itself.
 
   \subsection{Design}
 
   \subsubsection{Overview}
 
-  The team began designing their truss by experimenting in the Truss Analyzer application on the VLE. After some introduction to trusses in class, they played around with different designs to figure out what worked and what did not. They went through a few different  After much discussion and collaboration, they decided on their final design.
-  Overview of the design process
+  In deciding upon the best means of implementing image processing algorithms, the team first considered the best means to bring this technology to the user. While MATLAB could have been used with great success, the team wished to create a more user-friendly tool which had greater cross-platform compatibility. MATLAB is only available on certain computers, and acquiring it requires a license. Rather than require users to download MATLAB and use our code, it was instead decided that the a more centralized approach could reach more users by using a server. Users could then interact with this central server, uploading images and selecting the algorithm to be performed on them. Being that the computational power necessary to perform these types of image processing is not particular intensive given today's powerful hardware, it was decided that JavaScript  could effectively be used to meet our requirements. 
+  
 
   \subsubsection{Choice and Reasoning}
 
-  Truss design with alternatives considered in insight into your design decisions
+  Making a decision to use JavaScript as opposed to MATLAB depended upon numerous factors. While the project certaintly could have been completed with MATLAB, JavaScript, or even C++, there were numerous factors that made Javascript an attractive choice. The ability of the program to be run anywhere using only a web-enabled device was a huge advantage. In addition, having skills in creating web applications is very relevant in the tech economy of today; many software and hardware companies need web developers to develop their products or to provide secondary services that are associated with their hardware products. Internet of Things devices in particular make extensive use of web applications. It was thus decided that learning the use of JavaScript, Git, Node.js, and Webpack would prove invaluable skills in the marketplace. For this reason, the project was used as a learning experience for not only image processing, but the creation of web applications as well.
 
   \subsubsection{Design Analysis summary}
 
