@@ -54,8 +54,8 @@
 
   \section{Abstract}
 
-  The goal of this project was to create a web application with image processing capability, providing a suite for users to upload and modify images. Numerous image processing operations can be performed using this application, including Laplacian filters, histogram equalization, image sharpening, smoothing, negatives, vertical line detect, and more. Filters can be applied in succession to achieve an endless variety of results. The application is hosted online using the Firebase Development Platform, while most of the processing is performed locally on the client side. In effect, a rudimentary "Photoshop" tool has been successfully created.
-  
+  The goal of this project was to create a web application with image processing capability, providing a suite for users to upload and modify images. Numerous image processing operations can be performed using this application, including Laplacian filters, histogram equalization, image sharpening, smoothing, negatives, vertical line detect, and more. Filters can be applied in succession to achieve an endless variety of results. The application is hosted online using the Firebase Development Platform, while most of the processing is performed locally on the client side. In effect, a rudimentary ”Photoshop” tool has been successfully created. The filters are all 3x3 matrices, convolved over the image with a simple script. Javascript was used for the development of the project, with Jimp as the main processing library. Jimp allows for quick pixel value data and manipulation, and this is what the library was used for. The program for the image manipulation is run completely client-side, with optional code to run the image processing in cloud functions. The original intention of the project was to run a face detection script in the cloud, and report results, but the results were not as good as expected possibly due to inadequate training data on the Viola-Jones algorithm.  
+
   \newpage
 
   \section{Introduction}
@@ -76,18 +76,6 @@
   
   The second optional goal for this project was the addition of face detection algorithms to detect the presence of a face within an image based on rudimentary features using the WHAT ALGORITHM???. As machine learning is becoming a very commonly used technique in computer science, we may first think of solving this problem using machine learning to identify a face. However, using machine learning may introduce unnecesarry bugs into the system which are elusive to track down, thus reducing the reliability of the algorithm. Better practice in this case is to use the method that has the least opportunity for error, which would be feature detection. By programming in the particular features of interest, the programmer can have strict control over extraneous errors that would otherwise be introduced with a fast-and-loose method such as machine learning. However, due to time constraints as well as the additional complexity involved in the implementation of this algorithm, this part of the project was not completed.
 
-
-  \subsection{Approach}
-
-  Approach to project planning, scheduling, and completion.
-
-  \begin{figure}[!htb]
-    \centering
-    \includegraphics[width=0.75\textwidth]{assets/logo.png}
-    \caption{scheduling chart}
-    \label{fig:spacesuitdisplay}
-  \end{figure}
-
   \newpage
 
   \section{Discussion}
@@ -100,59 +88,101 @@
 
   In deciding upon the best means of implementing image processing algorithms, the team first considered the best means to bring this technology to the user. While MATLAB could have been used with great success, the team wished to create a more user-friendly tool which had greater cross-platform compatibility. MATLAB is only available on certain computers, and acquiring it requires a license. Rather than require users to download MATLAB and use our code, it was instead decided that the a more centralized approach could reach more users by using a server. Users could then interact with this central server, uploading images and selecting the algorithm to be performed on them. Being that the computational power necessary to perform these types of image processing is not particular intensive given today's powerful hardware, it was decided that JavaScript  could effectively be used to meet our requirements. 
   
-
   \subsubsection{Choice and Reasoning}
 
   Making a decision to use JavaScript as opposed to MATLAB depended upon numerous factors. While the project certaintly could have been completed with MATLAB, JavaScript, or even C++, there were numerous factors that made Javascript an attractive choice. The ability of the program to be run anywhere using only a web-enabled device was a huge advantage. In addition, having skills in creating web applications is very relevant in the tech economy of today; many software and hardware companies need web developers to develop their products or to provide secondary services that are associated with their hardware products. Internet of Things devices in particular make extensive use of web applications. It was thus decided that learning the use of JavaScript, Git, Node.js, and Webpack would prove invaluable skills in the marketplace. For this reason, the project was used as a learning experience for not only image processing, but the creation of web applications as well.
 
-  \subsubsection{Design Analysis summary}
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/main_page.png}
+    \caption{main page design}
+    \label{fig:main-page}
+  \end{figure}
 
-  Design analysis summary as developed from Truss Analyzer with interpretation of data
-
-  \subsubsection{Fabrication}
-
-  Fabrication concerns and considerations in the design phase
-
-  \newpage
-
-  \section{Conclusion and Recommendations}
-
-  \subsection{Accomplishments}
-
-  Describes the work in terms of accomplishments, both successful and unsuccessful
-
-  \subsection{Recommendations}
-
-  Provides recommendations to improve the project in terms of basic knowledge, materials, equipment, or other guidance
-
-  Discuss what you would have done differently given the opportunity
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/login.png}
+    \caption{login page design}
+    \label{fig:login-page}
+  \end{figure}
 
   \newpage
 
-  \section{Attachments}
+  \section{Conclusion}
 
-  \subsection{Work Chart}
+  \subsection{Testing and Results}
 
-  Work break down structure and organization chart with roles and responsibilities
+  The basic image processing suite performs well with all functions. With the use of a simple filter mask, most filters such as Laplacian, sharpening, smoothing, negatives, and Histogram equalization work flawlessly. It was determined that two functions, the vertical and horizontal line detect, could use more refinement, as the simple filtering stage does not perform every necessary step for proper line detection. This is because a simple 3x3 filter does not necessarily suffice, as the lines in the image could be closer than 6 pixels together, and therefore create false-positive lines in the output image. Additionally, the histogram equalization only works for images that are black and white, because when the image is color it changes the amplitude of the colors in the process of the equalization. Therefore the colors of the image itself change.
 
-  \newpage
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/image_uploaded.png}
+    \caption{uploaded image}
+    \label{fig:image-uploaded}
+  \end{figure}
 
-  \subsection{Truss Analysis}
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/grayscale.png}
+    \caption{grayscale}
+    \label{fig:grayscale}
+  \end{figure}
 
-  Truss Analysis jpg and csv printouts for final truss design
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/negative.png}
+    \caption{negative}
+    \label{fig:negative}
+  \end{figure}
 
-  \newpage
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/smoothing.png}
+    \caption{smoothing}
+    \label{fig:smoothing}
+  \end{figure}
 
-  \subsection{Alternatives Truss Analysis}
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/sharpened.png}
+    \caption{sharpening}
+    \label{fig:sharpened}
+  \end{figure}
 
-  Truss Analysis jpg and csv printouts for at least two alternate designs considered
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/horizontal_line.png}
+    \caption{horizontal line input}
+    \label{fig:horizontal-line}
+  \end{figure}
 
-  \newpage
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/horizontal_line_output.png}
+    \caption{horizontal line output}
+    \label{fig:horizontal-line-output}
+  \end{figure}
 
-  \subsection{Data}
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/original_points.png}
+    \caption{point detect input}
+    \label{fig:original-points}
+  \end{figure}
 
-  Brass compression data, charts, and formulas
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/point_detect.png}
+    \caption{point detect output}
+    \label{fig:point-detect-output}
+  \end{figure}
 
+  \subsection{Ideas for Future Versions}
+
+  With the current version of the software, there are a few bugs that need to be fixed. Firstly, when performing horizontal and vertical line detection, if there is not sufficient space between the lines in the image, the output can become filled with artifacts. This is likely due to the filter size being too large to fit within the pixels between each line.
+
+  Additionally, histogram equalization currently only works in black and white - first the image is converted to grayscale to consolidate the RGB values, and the calculation is performed on the 2D array of pixel values. In the future, it would be an interesting feature to calculate the proper scaling factors to allow for color histogram equalization.
+  
   \newpage
 
   \printbibliography
