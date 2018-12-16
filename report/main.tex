@@ -24,7 +24,7 @@
     Image Processing Report: Web Image Filtering \\
     \large Stevens Institute of Technology}
 
-  \date{December 11, 2018}
+  \date{December 15, 2018}
   \author{By Joshua Schmidt and Chris Blackwood}
 
   \usepackage{graphicx}
@@ -62,9 +62,7 @@
 
   \subsection{Project objectives}
 
-  The main objective of this project was to create a web application for the digital editing of photos in real-time.
-
-  Key Project objectives included building an application utilizing industry-standard tools including JavaScript, jQuery, and Node.js. This project served as an ample opportunity to learn more about the best practices of web development, as well as using Git as a document management system. In order to maintain the large number of JavaScript files used for this project, the JavaScript management tool called Webpack was used to manage the files automatically.
+  The main objective of this project was to create a web application for the digital editing of photos in real-time. Key Project objectives included building an application utilizing industry-standard tools including JavaScript, jQuery, and Node.js. This project served as an ample opportunity to learn more about the best practices of web development, as well as using Git as a document management system. In order to maintain the large number of JavaScript files used for this project, the JavaScript management tool called Webpack was used to manage the files automatically.
 
   \subsection{Project Specifications}
 
@@ -74,8 +72,19 @@
   
   As optional goals, a web application was to be created which could be hosted externally and accessed from anywhere within the world. Requirements for this application where that it needed to have adequate response time, loading in no more than 5 seconds (as user retention drops as page load times increase). Being a browser based application, this method of implementation allows for operating system cross compatibility, as users can upload images from smartphones, tablets, and desktop machines running any operating system of their choice.
   
-  The second optional goal for this project was the addition of face detection algorithms to detect the presence of a face within an image based on rudimentary features using the WHAT ALGORITHM???. As machine learning is becoming a very commonly used technique in computer science, we may first think of solving this problem using machine learning to identify a face. However, using machine learning may introduce unnecesarry bugs into the system which are elusive to track down, thus reducing the reliability of the algorithm. Better practice in this case is to use the method that has the least opportunity for error, which would be feature detection. By programming in the particular features of interest, the programmer can have strict control over extraneous errors that would otherwise be introduced with a fast-and-loose method such as machine learning. However, due to time constraints as well as the additional complexity involved in the implementation of this algorithm, this part of the project was not completed.
-
+  The second optional goal for this project was the addition of face detection algorithms to detect the presence of a face within an image based on rudimentary features using the Viola Jones Object Detection Algorithm. As machine learning is becoming a very commonly used technique in computer science, we may first think of solving this problem using machine learning to identify a face. However, using machine learning may introduce unnecesarry bugs into the system which are elusive to track down, thus reducing the reliability of the algorithm. Better practice in this case is to use the method that has the least opportunity for error, which would be feature detection. By programming in the particular features of interest, the programmer can have strict control over extraneous errors that would otherwise be introduced with a fast-and-loose method such as machine learning. However, due to time constraints as well as the additional complexity involved in the implementation of this algorithm, this part of the project was not completed.
+  
+  \subsection{Work Breakdown Structure}
+  
+  The work was distributed in the following manner:
+  \begin{itemize}
+  \item Joshua Schmidt (Computer Engineering): Responsible for Web Application coding and image processing algorithms.
+  \item Chris Blackwood (Electrical Engineering): Responsible for writing the report and debugging problems with image processing algorithms.
+  \end{itemize}
+  
+  \textit {
+  While Chris would liked to have done more work on the coding segment of this project, this project involved a considerable amount of work that needed to be completed before coding could begin. In order to work with the Node Package Manager (npm) and Webpack JavaScript management system, it was necessary to update to Ubuntu 16.04, repartition a harddrive, and install numerous libraries and solve dependancy issues. It was only after all this was completed that work could begin - but by this time, Josh had already written the majority of the code. In order to compensate for this, Chris wrote much of the report and contributed to debugging where it was needed.}
+  
   \newpage
 
   \section{Discussion}
@@ -95,20 +104,32 @@
   \subsection{Deployment}
 
   To deploy the website, GitHub pages and Firebase Hosting were used. Since the website is statically generated, these two services were used to host the static files. The source code for the files can be found on the \href{https://github.com/jschmidtnj/imageprocessing}{github.com/jschmidtnj/imageprocessing} github page, along with instructions for compiling and developing locally. The code is well-documented, with everything needed to compile and deploy in the frontend-app directory. For viewing the report and its Latex source code, see the report directory. To compile the source code, webpack is used, which injects the dependencies from the node package manager into the html pages. It also minifies the javascript and css, and moves the files into the corresponding public folder directory. To run the compilation shell script, use "npm run build" in the frontend-app directory. Then run "npm run serve" to start a localhost of the website. Make sure to install the dependencies and add the config file before doing this, following the README.md file. The website is currently deployed at \href{https://facedetect.xyz/}{facedetect.xyz}, \href{https://image-face-detection.firebaseapp.com/}{image-face-detection.firebaseapp.com}, and \href{https://jschmidtnj.github.io/ImageProcessing/}{jschmidtnj.github.io/imageprocessing}.
+  
+   The software flow diagram below (Figure 1) shows the general structure of the program. In the current implementation of the system, the only purpose of the server is to provide the JavaScript code to the client side (the user's browser), where the code is then run client-side. All of the image processing thus is performed on the user's computer. This decreases the computational burden placed on the servers. The image filtering functions include image enhancement tools such as Laplacian sharpening, blurring, grayscale, point detect, line detect, and many more. In addition, histograms can be created from a number of different statistical properties of the image, including luminance, brightness, perceived brightness, and RGB content.
+  
+  Due to time constraints, the Face Detect program could not be finished by the project deadline. If this portion of the project were to be completed, it would be run on the server side to accelerate the processing time.
+
+  \begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{assets/Software_Flow_Diagram.png}
+    \caption{Software Flow Diagram}
+    \label{fig:flow-diagram}
+  \end{figure}
 
   \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.75\textwidth]{assets/main_page.png}
-    \caption{main page design}
+    \caption{Main Page Design}
     \label{fig:main-page}
   \end{figure}
 
   \begin{figure}[!htb]
     \centering
     \includegraphics[width=0.75\textwidth]{assets/login.png}
-    \caption{login page design}
+    \caption{Login Page Design}
     \label{fig:login-page}
   \end{figure}
+  
 
   \newpage
 
@@ -116,7 +137,7 @@
 
   \subsection{Testing and Results}
 
-  The basic image processing suite performs well with all functions. With the use of a simple filter mask, most filters such as Laplacian, sharpening, smoothing, negatives, and Histogram equalization work flawlessly. It was determined that two functions, the vertical and horizontal line detect, could use more refinement, as the simple filtering stage does not perform every necessary step for proper line detection. This is because a simple 3x3 filter does not necessarily suffice, as the lines in the image could be closer than 6 pixels together, and therefore create false-positive lines in the output image. Additionally, the histogram equalization only works for images that are black and white, because when the image is color it changes the amplitude of the colors in the process of the equalization. Therefore the colors of the image itself change.
+  The basic image processing suite performs well with all functions. With the use of a simple filter mask, most filters such as Laplacian, sharpening, smoothing, negatives, and Histogram equalization work flawlessly. It was determined that two functions, the vertical and horizontal line detect, could use more refinement, as the simple filtering stage does not perform every necessary step for proper line detection. This is because a simple 3x3 filter does not necessarily suffice, as the lines in the image could be closer than 6 pixels together, and therefore create false-positive lines in the output image. Additionally, the histogram equalization only works for images that are black and white, because when the image is in color it changes the amplitude of the colors in the process of the equalization. This causes the colors of the image to change. It is certainly possible to redesign the histogram equalization program to accept color images by scaling the RGB values appropriately; this would be a key feature for future versions of the software. For now, if a user wishes to perform histogram equalization, he or she must convert the image to grayscale first, and then perform the histogram equalization.
 
   \begin{figure}[!htb]
     \centering
@@ -187,6 +208,13 @@
     \caption{Output of Point Detect Algorithm}
     \label{fig:point-detect-output}
   \end{figure}
+  
+  \subsection{Analysis of Results}
+  It can be seen from these sample images that most functions of this image processing suite work quite well. Notice the moon in Figure 8 and 9 - the horizontal lines which were present in the input image become exacerbated by the Laplacian filter. This is because the composite Laplacian operator is by nature a high-pass filter, which enhances the high-frequency components of the image, while leaving the low frequency components untouched. The white line is a high-frequency component due to its rapid shift in color, hence the line becomes quite pronounced after undergoing the filter. This is to be expected for this filter type, and tells us that our sharpening algorithm is working properly.
+  
+  In Figure 10, an interesting phenomenon occurs - the watermark on the original image becomes very pronounced after undergoing horizontal line detection. The watermark which was originally difficult to notice within the image has become quite pronounced after undergoing the line detection filter. This indicates that such a technique may be useful in scouring images for hidden text. One potentially useful application of this would be to locate the watermark on US Dollar Bills, or perhaps locating the watermark on a Driver's License. While this particular filter may not work for all types and sizes of text, line detection is one technique to consider in these applications.
+  
+  The point detection algorithm shown in figures 12 and 13 demonstrate that this filter can detect regions of interest as well. The algorithm is merely a filter which finds the outline of a feature (the black blobs in this case), and accentuates the boundary between the feature and the background. In reality, this is very similar to an edge-detection algorithm, one that finds the distinct boundary between different features at any angle. This is in stark contrast to horizontal and vertical line detection algorithms, which merely look for horizontal or vertical lines within the image (which may or may not exist). The point detection algorithm thus provides a way to detect circular or irregularly shaped boundaries.
 
   \subsection{Ideas for Future Versions}
 
