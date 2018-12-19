@@ -104,8 +104,12 @@ int main(int argc, char *argv[])
 
     int sum;
 
-	for (j = 1; j < height - 1; j++) {
-        for (k = 1; k < width - 1; k++) {
+	for (j = 0; j < height; j++) {
+        for (k = 0; k < width; k++) {
+			if (j == 0 || k == 0 || j == height - 1 || k == width - 1) {
+				image_out[j][k] = image_in[j][k];
+				continue;
+			}
             sum = 0;
             for (l = -1; l < 2; l++) {
                 for (m = -1; m < 2; m++) {
